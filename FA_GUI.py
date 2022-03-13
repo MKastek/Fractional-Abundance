@@ -24,17 +24,29 @@ class FA_GUI(tk.Tk):
         self.top_frame = ttk.Frame(self, padding="10 10 10 10")
         self.top_frame.pack(side=TOP)
 
+        self.status_variable = StringVar()
+        self.status_variable.set("Status: Load the data")
+        self.status_label = Label(self.top_frame,textvariable=self.status_variable)
+
         self.ACD_button = Button(self.top_frame, text="ACD", command=self.open_ACD_file, width=10, height=2)
         self.SCD_button = Button(self.top_frame, text="SCD", command=self.open_SCD_file, width=10, height=2)
-        self.plot_button = Button(self.top_frame, text="plot", command=threading.Thread(target=self.plot).start, width=10, height=2)
+        self.plot_button = Button(self.top_frame, text="plot", command=lambda: threading.Thread(target=self.plot).start(), width=10, height=2)
 
+        self.status_label.pack(side=LEFT)
         self.ACD_button.pack(side=LEFT)
         self.SCD_button.pack(side=LEFT)
         self.plot_button.pack(side=LEFT)
 
+
+
         self.fig = Figure(figsize=(5, 4), dpi=100)
         self.subplot = self.fig.add_subplot(111)
+
         self.subplot.grid()
+        self.subplot.set_xscale("log")
+        self.subplot.set_yscale("log")
+        self.subplot.set_ylim((10 ** -3, 10 ** 0))
+        self.subplot.set_xlim((10 ** 1, 10 ** 4))
         self.canvas = FigureCanvasTkAgg(self.fig, master=self)
         self.canvas.draw()
         self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
@@ -50,21 +62,25 @@ class FA_GUI(tk.Tk):
     def open_SCD_file(self):
         self.SCD_file = os.path.basename(fd.askopenfilename(initialdir='.'))
 
+    def plot_data(self):
+        pass
+
     def plot(self):
         FA = FractionalAbundance(atom='Xe', SCD_file=self.SCD_file, ACD_file=self.ACD_file)
         self.fig.clf()
         self.subplot = self.fig.add_subplot(111)
+        self.subplot.grid()
+        self.subplot.set_xscale("log")
+        self.subplot.set_yscale("log")
+        self.subplot.set_ylim((10 ** -3, 10 ** 0))
+        self.subplot.set_xlim((10 ** 1, 10 ** 4))
         for i in range(FA.Z + 1):
             x = FA.ynew
             y = FA.FA_arr[i][:, 50]
             self.subplot.plot(x, y, label="$" + FA.atom + "^{" + str(i) + "+}$")
-            self.subplot.grid()
-            self.subplot.set_xscale("log")
-            self.subplot.set_yscale("log")
-            self.subplot.set_ylim((10 ** -3, 10 ** 0))
-            self.subplot.set_xlim((10 ** 1, 10 ** 4))
         self.fig.canvas.draw_idle()
 
+
 if __name__ == "__main__":
-    Fa_GUI = FA_GUI()
-    Fa_GUI.mainloop()
+    FA_GUI = FA_GUI()
+    FA_GUI.mainloop()
