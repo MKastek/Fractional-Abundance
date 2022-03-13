@@ -8,65 +8,63 @@ from tkinter import filedialog as fd
 from matplotlib.figure import Figure
 import pandas as pd
 from tkinter.messagebox import showerror
+import tkinter as tk
 from FractionalAbundance import FractionalAbundance
 import os
 import threading
 
 
-def open_ACD_file():
-    global ACD_file
-    ACD_file = os.path.basename(fd.askopenfilename(initialdir='.'))
+class FA_GUI(tk.Tk):
+    def __init__(self):
+        super().__init__()
+
+        self.title("Spectral data")
+        self.geometry("1000x750")
+
+        self.top_frame = ttk.Frame(self, padding="10 10 10 10")
+        self.top_frame.pack(side=TOP)
+
+        self.ACD_button = Button(self.top_frame, text="ACD", command=self.open_ACD_file, width=10, height=2)
+        self.SCD_button = Button(self.top_frame, text="SCD", command=self.open_SCD_file, width=10, height=2)
+        self.plot_button = Button(self.top_frame, text="plot", command=threading.Thread(target=self.plot).start, width=10, height=2)
+
+        self.ACD_button.pack(side=LEFT)
+        self.SCD_button.pack(side=LEFT)
+        self.plot_button.pack(side=LEFT)
+
+        self.fig = Figure(figsize=(5, 4), dpi=100)
+        self.subplot = self.fig.add_subplot(111)
+        self.subplot.grid()
+        self.canvas = FigureCanvasTkAgg(self.fig, master=self)
+        self.canvas.draw()
+        self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
+
+        self.toolbar = NavigationToolbar2Tk(self.canvas, self)
+        self.toolbar.update()
+        self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
+
+    def open_ACD_file(self):
+        self.ACD_file = os.path.basename(fd.askopenfilename(initialdir='.'))
 
 
-def open_SCD_file():
-    global SCD_file
-    SCD_file = os.path.basename(fd.askopenfilename(initialdir='.'))
+    def open_SCD_file(self):
+        self.SCD_file = os.path.basename(fd.askopenfilename(initialdir='.'))
 
-def plot():
-    FA = FractionalAbundance(atom='Xe', SCD_file=SCD_file, ACD_file=ACD_file)
-    fig.clf()
-    subplot = fig.add_subplot(111)
-    for i in range(FA.Z + 1):
-        x = FA.ynew
-        y = FA.FA_arr[i][:, 50]
-        subplot.plot(x, y, label="$" + FA.atom + "^{" + str(i) + "+}$")
-        subplot.grid()
-        subplot.set_xscale("log")
-        subplot.set_yscale("log")
-        subplot.set_ylim((10 ** -3, 10 ** 0))
-        subplot.set_xlim((10 ** 1, 10 ** 4))
+    def plot(self):
+        FA = FractionalAbundance(atom='Xe', SCD_file=self.SCD_file, ACD_file=self.ACD_file)
+        self.fig.clf()
+        self.subplot = self.fig.add_subplot(111)
+        for i in range(FA.Z + 1):
+            x = FA.ynew
+            y = FA.FA_arr[i][:, 50]
+            self.subplot.plot(x, y, label="$" + FA.atom + "^{" + str(i) + "+}$")
+            self.subplot.grid()
+            self.subplot.set_xscale("log")
+            self.subplot.set_yscale("log")
+            self.subplot.set_ylim((10 ** -3, 10 ** 0))
+            self.subplot.set_xlim((10 ** 1, 10 ** 4))
+        self.fig.canvas.draw_idle()
 
-        fig.canvas.draw_idle()
-
-root = Tk()
-root.geometry('1000x750')
-# Define the title for the window
-root.title("Spectral data")
-
-
-top_frame = ttk.Frame(root, padding="10 10 10 10")
-top_frame.pack(side=TOP)
-
-ACD_button = Button(top_frame, text="ACD",  command=open_ACD_file, width=10, height=2)
-SCD_button = Button(top_frame, text="SCD", command=open_SCD_file,width=10, height=2)
-plot_button = Button(top_frame, text="plot", command=threading.Thread(target=plot).start, width=10, height=2)
-
-ACD_button.pack(side=LEFT)
-SCD_button.pack(side=LEFT)
-plot_button.pack(side=LEFT)
-
-
-
-
-fig = Figure(figsize=(5, 4), dpi=100)
-subplot = fig.add_subplot(111)
-subplot.grid()
-canvas = FigureCanvasTkAgg(fig, master=root)
-canvas.draw()
-canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
-
-toolbar = NavigationToolbar2Tk(canvas, root)
-toolbar.update()
-canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
-
-root.mainloop()
+if __name__ == "__main__":
+    Fa_GUI = FA_GUI()
+    Fa_GUI.mainloop()
