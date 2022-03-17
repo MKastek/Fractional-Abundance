@@ -9,7 +9,7 @@ from matplotlib.figure import Figure
 import pandas as pd
 from tkinter.messagebox import showerror
 import tkinter as tk
-from FractionalAbundance import FractionalAbundance
+import FractionalAbundance
 import os
 import threading
 
@@ -37,16 +37,8 @@ class FA_GUI(tk.Tk):
         self.SCD_button.pack(side=LEFT)
         self.plot_button.pack(side=LEFT)
 
-
-
         self.fig = Figure(figsize=(5, 4), dpi=100)
-        self.subplot = self.fig.add_subplot(111)
-
-        self.subplot.grid()
-        self.subplot.set_xscale("log")
-        self.subplot.set_yscale("log")
-        self.subplot.set_ylim((10 ** -3, 10 ** 0))
-        self.subplot.set_xlim((10 ** 1, 10 ** 4))
+        self.plot_data()
         self.canvas = FigureCanvasTkAgg(self.fig, master=self)
         self.canvas.draw()
         self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
@@ -63,22 +55,27 @@ class FA_GUI(tk.Tk):
         self.SCD_file = os.path.basename(fd.askopenfilename(initialdir='.'))
 
     def plot_data(self):
-        pass
-
-    def plot(self):
-        FA = FractionalAbundance(atom='Xe', SCD_file=self.SCD_file, ACD_file=self.ACD_file)
-        self.fig.clf()
         self.subplot = self.fig.add_subplot(111)
         self.subplot.grid()
+        self.subplot.set_title("Fractional Abundance")
+        self.subplot.set_xlabel("$T_{e} [eV]$")
+        self.subplot.set_ylabel("FA")
         self.subplot.set_xscale("log")
         self.subplot.set_yscale("log")
         self.subplot.set_ylim((10 ** -3, 10 ** 0))
         self.subplot.set_xlim((10 ** 1, 10 ** 4))
+
+    def plot(self):
+        self.status_variable.set("Status: Calculating...")
+        FA = FractionalAbundance.FractionalAbundance(atom='Xe', SCD_file=self.SCD_file, ACD_file=self.ACD_file)
+        self.fig.clf()
+        self.plot_data()
         for i in range(FA.Z + 1):
             x = FA.ynew
             y = FA.FA_arr[i][:, 50]
             self.subplot.plot(x, y, label="$" + FA.atom + "^{" + str(i) + "+}$")
         self.fig.canvas.draw_idle()
+        self.status_variable.set("Status: Load the data")
 
 
 if __name__ == "__main__":
