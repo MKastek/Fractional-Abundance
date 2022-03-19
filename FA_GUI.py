@@ -12,6 +12,7 @@ import tkinter as tk
 import FractionalAbundance
 import os
 import threading
+import time
 
 
 class FA_GUI(tk.Tk):
@@ -37,7 +38,18 @@ class FA_GUI(tk.Tk):
         self.SCD_button.pack(side=LEFT)
         self.plot_button.pack(side=LEFT)
 
+        self.slider_frame = ttk.Frame(self.top_frame, padding="10 10 10 10")
+        self.slider_frame.pack(side=RIGHT)
+
+        self.Te_label = Label(self.slider_frame, text="Te [eV]")
+        self.Te_label.pack(side=TOP)
+
+        self.Te_scale = DoubleVar()
+        self.slider_Te = Scale(self.slider_frame, orient='horizontal', from_=1.1, to=4.0, resolution=0.1, variable=self.Te_scale,command=lambda x: self.replot())
+        self.slider_Te.pack(side=TOP)
+
         self.fig = Figure(figsize=(5, 4), dpi=100)
+        self.fig.canvas.mpl_connect('motion_notify_event', self.on_plot_hover)
         self.plot_data()
         self.canvas = FigureCanvasTkAgg(self.fig, master=self)
         self.canvas.draw()
@@ -49,6 +61,7 @@ class FA_GUI(tk.Tk):
 
     def open_ACD_file(self):
         self.ACD_file = fd.askopenfilename(initialdir='.')
+        self.atom = os.path.basename(self.ACD_file)[-6:-4]
         print(self.ACD_file)
 
 
@@ -56,8 +69,10 @@ class FA_GUI(tk.Tk):
         self.SCD_file = fd.askopenfilename(initialdir='.')
         print(self.SCD_file)
 
-    def plot_data(self):
+    def plot_data(self, scale_Te=4.0):
         self.subplot = self.fig.add_subplot(111)
+        self.annot = self.subplot.annotate("", xy=(300, 0.01), xytext=(0, 0), textcoords="offset points")
+        self.annot.set_visible(False)
         self.subplot.grid()
         self.subplot.set_title("Fractional Abundance")
         self.subplot.set_xlabel("$T_{e} [eV]$")
@@ -65,19 +80,39 @@ class FA_GUI(tk.Tk):
         self.subplot.set_xscale("log")
         self.subplot.set_yscale("log")
         self.subplot.set_ylim((10 ** -3, 10 ** 0))
-        self.subplot.set_xlim((10 ** 1, 10 ** 4))
+        self.subplot.set_xlim((10 ** 1, 10 ** scale_Te))
 
-    def plot(self):
+    def plot(self, scale_Te=4.0):
         self.status_variable.set("Status: Calculating...")
-        FA = FractionalAbundance.FractionalAbundance(atom='Xe', SCD_file=self.SCD_file, ACD_file=self.ACD_file)
+        FA = FractionalAbundance.FractionalAbundance(atom=self.atom, SCD_file=self.SCD_file, ACD_file=self.ACD_file)
         self.fig.clf()
-        self.plot_data()
+        self.plot_data(scale_Te=scale_Te)
         for i in range(FA.Z + 1):
             x = FA.ynew
             y = FA.FA_arr[i][:, 50]
             self.subplot.plot(x, y, label="$" + FA.atom + "^{" + str(i) + "+}$")
         self.fig.canvas.draw_idle()
         self.status_variable.set("Status: Load the data")
+
+    def replot(self):
+        self.subplot.set_xlim((10 ** 1, 10 ** self.Te_scale.get()))
+        self.fig.canvas.draw_idle()
+
+    def on_plot_hover(self,event):
+        vis = self.annot.get_visible()
+        for curve,num in zip(self.subplot.get_lines(), range(len(self.subplot.get_lines()))):
+            if curve.contains(event)[0]:
+                print(num)
+                print(event.xdata,event.ydata)
+                self.annot.xy = (event.xdata, event.ydata)
+                self.annot.set_text(self.atom.capitalize()+" "+str(num)+"+")
+                self.annot.set_visible(True)
+                self.fig.canvas.draw_idle()
+            else:
+                if vis:
+                    time.sleep(10**-5)
+                    self.annot.set_visible(False)
+                    self.fig.canvas.draw_idle()
 
 
 if __name__ == "__main__":
