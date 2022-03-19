@@ -25,18 +25,18 @@ class FractionalAbundance:
         if not connurent:
             self.FA_arr = [self.get_Fractional_Abundance(i, ACD_file, SCD_file) for i in range(self.Z + 1)]
 
-    def read_first_line_of_file(self, filename):
-        with open(os.path.join('data','unresolved',filename)) as file:
+    def read_first_line_of_file(self, filepath):
+        with open(filepath) as file:
             first_line = file.readline().strip().split()
             Z, num_of_Ne_axes, num_of_Te_axes = int(first_line[0]), int(first_line[1]), int(first_line[2])
             sum_of_axes = num_of_Te_axes + num_of_Ne_axes
             num_of_lines_to_read_with_axes = int(np.ceil(sum_of_axes / 8))
         return Z, num_of_Ne_axes, num_of_Te_axes, num_of_lines_to_read_with_axes, sum_of_axes
 
-    def read_axes(self, filename):
-        Z, num_of_Ne_axes, num_of_Te_axes, num_of_lines_to_read_with_axes, sum_of_axes = self.read_first_line_of_file(filename)
+    def read_axes(self, filepath):
+        Z, num_of_Ne_axes, num_of_Te_axes, num_of_lines_to_read_with_axes, sum_of_axes = self.read_first_line_of_file(filepath)
 
-        with open(os.path.join('data','unresolved',filename)) as file:
+        with open(filepath) as file:
             file.readline()
             file.readline()
             data = []
@@ -49,9 +49,9 @@ class FractionalAbundance:
         Te = [10 ** float(item) for item in data[num_of_Ne_axes:]]
         return Te, Ne
 
-    def read_data_from(self, filename, start_line, stop_line, num_of_lines_to_read_with_const_Te, empty_matrix):
+    def read_data_from(self, filepath, start_line, stop_line, num_of_lines_to_read_with_const_Te, empty_matrix):
 
-        with open(os.path.join('data','unresolved',filename)) as file:
+        with open(filepath) as file:
             data = np.array([item.split() for item in file.read().strip().splitlines()[start_line:stop_line]], dtype=object)
             data = np.split(data, 1)
             iter = 0
@@ -66,15 +66,15 @@ class FractionalAbundance:
 
         return f(self.xnew, self.ynew)
 
-    def read_coefficients_matrices(self, filename, type):
+    def read_coefficients_matrices(self, filepath, type):
 
         if type == 'SCD':
-            CD = {str(i) + str(i + 1): self.read_data_from(filename, self.start_line + i * self.move,
+            CD = {str(i) + str(i + 1): self.read_data_from(filepath, self.start_line + i * self.move,
                                                            self.stop_line + i * self.move,
                                                            self.num_of_lines_to_read_with_const_Te,
                                                            self.empty_matrix.copy()) for i in range(self.Z)}
         elif type == 'ACD':
-            CD = {str(i + 1) + str(i): self.read_data_from(filename, self.start_line + i * self.move,
+            CD = {str(i + 1) + str(i): self.read_data_from(filepath, self.start_line + i * self.move,
                                                            self.stop_line + i * self.move,
                                                            self.num_of_lines_to_read_with_const_Te,
                                                            self.empty_matrix.copy()) for i in range(self.Z)}

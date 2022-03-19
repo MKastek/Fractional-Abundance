@@ -48,11 +48,13 @@ class FA_GUI(tk.Tk):
         self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
 
     def open_ACD_file(self):
-        self.ACD_file = os.path.basename(fd.askopenfilename(initialdir='.'))
+        self.ACD_file = fd.askopenfilename(initialdir='.')
+        print(self.ACD_file)
 
 
     def open_SCD_file(self):
-        self.SCD_file = os.path.basename(fd.askopenfilename(initialdir='.'))
+        self.SCD_file = fd.askopenfilename(initialdir='.')
+        print(self.SCD_file)
 
     def plot_data(self):
         self.subplot = self.fig.add_subplot(111)
