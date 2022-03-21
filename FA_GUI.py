@@ -26,17 +26,19 @@ class FA_GUI(tk.Tk):
         self.top_frame.pack(side=TOP)
 
         self.status_variable = StringVar()
-        self.status_variable.set("Status: Load the data")
+        self.status_variable.set("Status: Load the ACD, SCD files")
         self.status_label = Label(self.top_frame,textvariable=self.status_variable)
 
         self.ACD_button = Button(self.top_frame, text="ACD", command=self.open_ACD_file, width=10, height=2)
         self.SCD_button = Button(self.top_frame, text="SCD", command=self.open_SCD_file, width=10, height=2)
         self.plot_button = Button(self.top_frame, text="plot", command=lambda: threading.Thread(target=self.plot).start(), width=10, height=2)
+        self.save_button = Button(self.top_frame, text="save",width=10, height=2)
 
         self.status_label.pack(side=LEFT)
         self.ACD_button.pack(side=LEFT)
         self.SCD_button.pack(side=LEFT)
         self.plot_button.pack(side=LEFT)
+        self.save_button.pack(side=LEFT)
 
         self.slider_frame = ttk.Frame(self.top_frame, padding="10 10 10 10")
         self.slider_frame.pack(side=RIGHT)
@@ -45,6 +47,7 @@ class FA_GUI(tk.Tk):
         self.Te_label.pack(side=TOP)
 
         self.Te_scale = DoubleVar()
+        self.Te_scale.set(4.0)
         self.slider_Te = Scale(self.slider_frame, orient='horizontal', from_=1.1, to=4.0, resolution=0.1, variable=self.Te_scale,command=lambda x: self.replot())
         self.slider_Te.pack(side=TOP)
 
@@ -83,6 +86,7 @@ class FA_GUI(tk.Tk):
         self.subplot.set_xlim((10 ** 1, 10 ** scale_Te))
 
     def plot(self, scale_Te=4.0):
+        self.status_label.config(font=("Segoe UI",12, "bold"))
         self.status_variable.set("Status: Calculating...")
         FA = FractionalAbundance.FractionalAbundance(atom=self.atom, SCD_file=self.SCD_file, ACD_file=self.ACD_file)
         self.fig.clf()
@@ -92,6 +96,7 @@ class FA_GUI(tk.Tk):
             y = FA.FA_arr[i][:, 50]
             self.subplot.plot(x, y, label="$" + FA.atom + "^{" + str(i) + "+}$")
         self.fig.canvas.draw_idle()
+        self.status_label.config(font=("Segoe UI", 10))
         self.status_variable.set("Status: Load the data")
 
     def replot(self):
@@ -102,15 +107,14 @@ class FA_GUI(tk.Tk):
         vis = self.annot.get_visible()
         for curve,num in zip(self.subplot.get_lines(), range(len(self.subplot.get_lines()))):
             if curve.contains(event)[0]:
-                print(num)
-                print(event.xdata,event.ydata)
+                #print(num)
+                #print(event.xdata,event.ydata)
                 self.annot.xy = (event.xdata, event.ydata)
                 self.annot.set_text(self.atom.capitalize()+" "+str(num)+"+")
                 self.annot.set_visible(True)
                 self.fig.canvas.draw_idle()
             else:
                 if vis:
-                    time.sleep(10**-5)
                     self.annot.set_visible(False)
                     self.fig.canvas.draw_idle()
 
