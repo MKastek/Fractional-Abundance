@@ -122,8 +122,8 @@ class FractionalAbundance:
 
 t1 = time.time()
 if __name__ == '__main__':
-    FA = FractionalAbundance(atom='Xe',SCD_file='scd89_xe.dat',ACD_file='acd89_xe.dat',connurent=True)
-    FA.calculate(ACD_file='acd89_xe.dat', SCD_file='scd89_xe.dat')
+    FA = FractionalAbundance(atom='Xe',SCD_file=os.path.join('data','unresolved','scd89_xe.dat'),ACD_file=os.path.join('data','unresolved','acd89_xe.dat'),connurent=True)
+    FA.calculate(ACD_file=os.path.join('data','unresolved','acd89_xe.dat'), SCD_file=os.path.join('data','unresolved','scd89_xe.dat'))
     t2 = time.time()
     print(f"Execution time: {t2 - t1} s")
     FA.plot_FA_all(i_Ne=40)
