@@ -19,7 +19,7 @@ class FA_GUI(tk.Tk):
     def __init__(self):
         super().__init__()
 
-        self.title("Spectral data")
+        self.title("Fractional Abundance")
         self.geometry("1000x750")
 
         self.top_frame = ttk.Frame(self, padding="10 10 10 10")
@@ -32,7 +32,7 @@ class FA_GUI(tk.Tk):
         self.ACD_button = Button(self.top_frame, text="ACD", command=self.open_ACD_file, width=10, height=2)
         self.SCD_button = Button(self.top_frame, text="SCD", command=self.open_SCD_file, width=10, height=2)
         self.plot_button = Button(self.top_frame, text="plot", command=lambda: threading.Thread(target=self.plot).start(), width=10, height=2)
-        self.save_button = Button(self.top_frame, text="save",width=10, height=2)
+        self.save_button = Button(self.top_frame, text="save", command=self.save,width=10, height=2)
 
         self.status_label.pack(side=LEFT)
         self.ACD_button.pack(side=LEFT)
@@ -65,12 +65,9 @@ class FA_GUI(tk.Tk):
     def open_ACD_file(self):
         self.ACD_file = fd.askopenfilename(initialdir='.')
         self.atom = os.path.basename(self.ACD_file)[-6:-4]
-        print(self.ACD_file)
-
 
     def open_SCD_file(self):
         self.SCD_file = fd.askopenfilename(initialdir='.')
-        print(self.SCD_file)
 
     def plot_data(self, scale_Te=4.0):
         self.subplot = self.fig.add_subplot(111)
@@ -78,7 +75,7 @@ class FA_GUI(tk.Tk):
         self.annot.set_visible(False)
         self.subplot.grid()
         self.subplot.set_title("Fractional Abundance")
-        self.subplot.set_xlabel("$T_{e} [eV]$")
+        self.subplot.set_xlabel("$T_{e}$ [eV]")
         self.subplot.set_ylabel("FA")
         self.subplot.set_xscale("log")
         self.subplot.set_yscale("log")
@@ -88,13 +85,13 @@ class FA_GUI(tk.Tk):
     def plot(self, scale_Te=4.0):
         self.status_label.config(font=("Segoe UI",12, "bold"))
         self.status_variable.set("Status: Calculating...")
-        FA = FractionalAbundance.FractionalAbundance(atom=self.atom, SCD_file=self.SCD_file, ACD_file=self.ACD_file)
+        self.FA = FractionalAbundance.FractionalAbundance(atom=self.atom, SCD_file=self.SCD_file, ACD_file=self.ACD_file)
         self.fig.clf()
         self.plot_data(scale_Te=scale_Te)
-        for i in range(FA.Z + 1):
-            x = FA.ynew
-            y = FA.FA_arr[i][:, 50]
-            self.subplot.plot(x, y, label="$" + FA.atom + "^{" + str(i) + "+}$")
+        for i in range(self.FA.Z + 1):
+            x = self.FA.ynew
+            y = self.FA.FA_arr[i][:, 50]
+            self.subplot.plot(x, y, label="$" + self.FA.atom + "^{" + str(i) + "+}$")
         self.fig.canvas.draw_idle()
         self.status_label.config(font=("Segoe UI", 10))
         self.status_variable.set("Status: Load the data")
@@ -102,6 +99,14 @@ class FA_GUI(tk.Tk):
     def replot(self):
         self.subplot.set_xlim((10 ** 1, 10 ** self.Te_scale.get()))
         self.fig.canvas.draw_idle()
+
+    def save(self):
+        df_FA = pd.DataFrame(columns=[i for i in range(self.FA.Z)])
+        for i in range(self.FA.Z + 1):
+            df_FA[i] = self.FA.FA_arr[i][:, 50]
+        df_FA['T[eV]'] = np.logspace(1, 4, num=1000)
+        file = fd.asksaveasfilename(initialdir='.',defaultextension=".csv")
+        df_FA.to_csv(os.path.basename(file))
 
     def on_plot_hover(self,event):
         vis = self.annot.get_visible()
