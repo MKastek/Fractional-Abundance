@@ -1,1 +1,2 @@
-![](images/plot.png)
+### Plot
+![](images/plot.PNG)
