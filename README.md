@@ -30,14 +30,10 @@ $Li^{3+} + e^{-} \rightarrow Li^{2+} + h\nu  \quad  (k^{32}_{ACD})$
 
 ### Rate equations
 
+$\frac{dn_{0}}{dt}$ $= k^{10}{ACD} n_1 n_e$ - $k^{01}{SCD} n_{0} n_{e} = 0$
 
-$\frac{dn_{0}}{dt} = k^{10}_{ACD} n_{1} n_{e} - k^{01}_{SCD} n_{0} n_{e} = 0$
 
-$\frac{dn_{1}}{dt} = k^{01}_{SCD}n_{0}n_{e} - k^{12}_{SCD}n_{1}n_{e} + k^{21}_{ACD}n_{2}n_{e} - k^{10}_{ACD}n_{1}n_{e} = 0$
 
-$\frac{dn_{2}}{dt} = k^{12}_{SCD}n_{1}n_{e} - k^{23}_{SCD}n_{2}n_{e} + k^{32}_{ACD}n_{3}n_{e} - k^{21}_{ACD}n_{2}n_{e} = 0$
-
-$\frac{dn_{3}}{dt} = k^{23}_{SCD}n_{2}n_{e} - k^{32}_{ACD}n_{3}n_{e} = 0 $
 
 ### GUI - tkinter
 ![](images/plot.PNG)
