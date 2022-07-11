@@ -11,7 +11,7 @@ All kinetic equations describing the incomplete thermodynamic equilibrium of ion
 recombination are as follows:  
 
 ### Collision ionization
-Associated with collisional ionization is the $k_{SCD}$ $frac{cm^{3}}{s}$ (Effective Ionization Coefficient):  
+Associated with collisional ionization is the $k_{SCD}$ $\frac{cm^{3}}{s}$ (Effective Ionization Coefficient):  
 
 $Li^{0} + e^{-} \rightarrow Li^{1+} + 2e^{-} \quad (k^{01}_{SCD})$  
 
@@ -21,7 +21,7 @@ $Li^{2+} + e^{-} \rightarrow Li^{3+} + 2e^{-}  \quad  (k^{23}_{SCD})$
 
 
 ### Collision recombination  
-Associated with collisional recombination is the $k_{ACD}$ $frac{cm^{3}}{s}$ (Effective Recombination Coefficient):  
+Associated with collisional recombination is the $k_{ACD}$ $\frac{cm^{3}}{s}$ (Effective Recombination Coefficient):  
 
 $Li^{1+} + e^{-} \rightarrow Li^{0} + h\nu \quad (k^{10}_{ACD})$  
 
