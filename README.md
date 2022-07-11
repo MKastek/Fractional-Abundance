@@ -35,7 +35,7 @@ $Li^{3+} + e^{-} \rightarrow Li^{2+} + h\nu  \quad  (k^{32}_{ACD})$
 A set of kinetic equations describing the change in the value of a given ion over time is represented by the following equations, which for coronal equilibrium should be equal to 0.  
 
 
-$\large  \frac{dn_{0}}{dt}$ $=k^{10}_{ACD} n_1 n_e$ - $k^{01}{SCD} n_{0} n_{e} = 0 $
+$\large  \frac{dn_{0}}{dt} =k^{10}{ACD} n_1 n_e$ - $k^{01}{SCD} n_{0} n_{e} = 0 $
 
 $\large  \frac{dn_{1}}{dt} = k^{01}{SCD}n_{0}n_{e} - k^{12}{SCD}n_{1}n_{e} + k^{21}{ACD}n_{2}n_{e} - k^{10}{ACD}n_{1}n_{e} = 0 $ 
 
