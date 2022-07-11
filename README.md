@@ -43,17 +43,23 @@ $\large  \frac{dn_{2}}{dt} = k^{12}{SCD}n_{1}n_{e} - k^{23}{SCD}n_{2}n_{e} + k^{
 
 $\large \frac{dn_{3}}{dt} = k^{23}{SCD}n_{2}n_{e} - k^{32}{ACD}n_{3}n_{e} = 0$
 
+Assuming $K_{0}=1$
+
+$$k^{01}{SCD} n_{0} = k^{10}{ACD}n_{1}, \quad K_{1} = \frac{k^{01}{SCD}}{k^{10}{ACD}}=\frac{n_{1}}{n_{0}}, \quad K_{0}\cdot K_{1}=\frac{n_{1}}{n_{0}}$$
+$$k^{12}{SCD} n_{1} = k^{21}{ACD}n_{2}, \quad K_{2} = \frac{k^{12}{SCD}}{k^{21}{ACD}}=\frac{n_{2}}{n_{1}}, \quad K_{1}\cdot K_{2}=\frac{n_{2}}{n_{0}}$$
+$$k^{23}{SCD} n_{2} = k^{32}{ACD}n_{3}, \quad K_{3} = \frac{k^{23}{SCD}}{k^{32}{ACD}}=\frac{n_{3}}{n_{2}}, \quad K_{1}\cdot K_{2}\cdot K_{3}=\frac{n_{3}}{n_{0}}$$
+
 Each of the coefficients $k_{SCD}$, $k_{ACD}$ and thus $K$ depends on the temperature $T_{e}$ and density $N_{e}$.  
 
 ### Fractional Abundance  
 
 $$\large FA(Li^{0})=\frac{n_{0}}{n_{0}+n_{1}+n_{2}+n_{3}}=\frac{K_{0}}{K_{0}+K_{0}\cdot K_{1}+K_{0}\cdot K_{1}\cdot K_{2}+K_{0} \cdot K_{1}\cdot K_{2} \cdot K_{3}}$$  
 
-$$\large FA(Li^{1+})=\frac{n_{0}}{n_{0}+n_{1}+n_{2}+n_{3}}=\frac{K_{0}\cdot K_{1}}{K_{0}+K_{0}\cdot K_{1}+K_{0}\cdot K_{1}\cdot K_{2}+K_{0} \cdot K_{1}\cdot K_{2} \cdot K_{3}}$$  
+$$\large FA(Li^{1+})=\frac{n_{1}}{n_{0}+n_{1}+n_{2}+n_{3}}=\frac{K_{0}\cdot K_{1}}{K_{0}+K_{0}\cdot K_{1}+K_{0}\cdot K_{1}\cdot K_{2}+K_{0} \cdot K_{1}\cdot K_{2} \cdot K_{3}}$$  
 
-$$\large FA(Li^{2+})=\frac{n_{0}}{n_{0}+n_{1}+n_{2}+n_{3}}=\frac{K_{0}\cdot K_{1} \cdot K_{2}}{K_{0}+K_{0}\cdot K_{1}+K_{0}\cdot K_{1}\cdot K_{2}+K_{0} \cdot K_{1}\cdot K_{2} \cdot K_{3}}$$  
+$$\large FA(Li^{2+})=\frac{n_{2}}{n_{0}+n_{1}+n_{2}+n_{3}}=\frac{K_{0}\cdot K_{1} \cdot K_{2}}{K_{0}+K_{0}\cdot K_{1}+K_{0}\cdot K_{1}\cdot K_{2}+K_{0} \cdot K_{1}\cdot K_{2} \cdot K_{3}}$$  
 
-$$\large FA(Li^{3+})=\frac{n_{0}}{n_{0}+n_{1}+n_{2}+n_{3}}=\frac{K_{0}\cdot K_{1} \cdot K_{2} \cdot K_{3}}{K_{0}+K_{0}\cdot K_{1}+K_{0}\cdot K_{1}\cdot K_{2}+K_{0} \cdot K_{1}\cdot K_{2} \cdot K_{3}}$$  
+$$\large FA(Li^{3+})=\frac{n_{3}}{n_{0}+n_{1}+n_{2}+n_{3}}=\frac{K_{0}\cdot K_{1} \cdot K_{2} \cdot K_{3}}{K_{0}+K_{0}\cdot K_{1}+K_{0}\cdot K_{1}\cdot K_{2}+K_{0} \cdot K_{1}\cdot K_{2} \cdot K_{3}}$$  
 
 The above formulas can be written in abbreviated notation:
 
