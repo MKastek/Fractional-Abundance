@@ -32,7 +32,11 @@ $Li^{3+} + e^{-} \rightarrow Li^{2+} + h\nu  \quad  (k^{32}_{ACD})$
 
 $\large  \frac{dn_{0}}{dt}$ $= k^{10}{ACD} n_1 n_e$ - $k^{01}{SCD} n_{0} n_{e} = 0$
 
+$\large  \frac{dn_{1}}{dt} = k^{01}{SCD}n_{0}n_{e} - k^{12}{SCD}n_{1}n_{e} + k^{21}{ACD}n_{2}n_{e} - k^{10}{ACD}n_{1}n_{e} = 0 $ 
 
+$\large  \frac{dn_{2}}{dt} = k^{12}{SCD}n_{1}n_{e} - k^{23}{SCD}n_{2}n_{e} + k^{32}{ACD}n_{3}n_{e} - k^{21}{ACD}n_{2}n_{e} = 0 $
+
+$\large \frac{dn_{3}}{dt} = k^{23}{SCD}n_{2}n_{e} - k^{32}{ACD}n_{3}n_{e} = 0$
 
 
 ### GUI - tkinter
