@@ -57,7 +57,7 @@ $FA(Li^{3+})=\frac{n_{0}}{n_{0}+n_{1}+n_{2}+n_{3}}=\frac{K_{0}\cdot K_{1} \cdot 
 
 The above formulas can be written in abbreviated notation:
 
-$\large FA(Li^{ i+})=\prod_{j=0}^{i} K_{j}
+$\large FA(Li^{ i+})=\prod_{j=0}^{i} K_{j}$
 
 
 ### Implementation  
