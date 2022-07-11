@@ -70,7 +70,10 @@ $$\Huge FA(Li^{ i+})=\prod_{j=0} ^{i} K_{j}\left(\sum_{k=0} ^{Z} \prod_{j=0} ^{k
 
 
 ### Implementation  
-
+Effective Recombination Coefficient and Effective Ionization Coefficient can be found in [OPEN-ADAS](https://open.adas.ac.uk/adf11?element=&acd=1&scd=1&year=&searching=1#searchbutton) database. Fractional Abundace is calculated with above equation in temperature [eV] and density [1/m^3] range available
+in OPEN-ADAS files.  
+Calculation are performed with use of NumPy in multithreaded approach, FA for every ion is calculated in another thread with use of ThreadPoolExecutor.
 
 ### GUI - tkinter
+Simple GUI application allows to study FA for different atoms.  
 ![](images/plot.PNG)
