@@ -57,7 +57,7 @@ $$\large FA(Li^{3+})=\frac{n_{0}}{n_{0}+n_{1}+n_{2}+n_{3}}=\frac{K_{0}\cdot K_{1
 
 The above formulas can be written in abbreviated notation:
 
-$$\Huge FA(Li^{ i+})=\prod_{j=0} ^{i} K_{j}\dfrac{1}{\sum_{k=0} ^{Z} \prod_{j=0} ^{k} K_{j} } $$
+$$\Huge FA(Li^{ i+})=\prod_{j=0} ^{i} K_{j}\left(\sum_{k=0} ^{Z} \prod_{j=0} ^{k} K_{j} \right)^{-1} $$
 
 
 
