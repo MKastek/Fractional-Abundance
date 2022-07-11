@@ -1,29 +1,46 @@
 import numpy as np
 import os
 import matplotlib.pyplot as plt
+import pandas as pd
 from scipy import interpolate
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 import time
+import re
 
 plt.rcParams['figure.figsize'] = [12, 7]
 
 
 class FractionalAbundance:
 
-    def __init__(self, atom, SCD_file, ACD_file, connurent = False):
+    def __init__(self, atom, concurrent = False):
+
         self.atom = atom
-        self.Z, self.num_of_Ne_axes, self.num_of_Te_axes, self.num_of_lines_to_read_with_axes, self.sum_of_axes = self.read_first_line_of_file(SCD_file)
-        self.Te, self.Ne = self.read_axes(SCD_file)
+        self.ACD_file, self.SCD_file= self.select_files()
+
+        self.Z, self.num_of_Ne_axes, self.num_of_Te_axes, self.num_of_lines_to_read_with_axes, self.sum_of_axes = self.read_first_line_of_file(self.SCD_file)
+        self.Te, self.Ne = self.read_axes(self.SCD_file)
+
         self.empty_matrix = np.empty([self.num_of_Te_axes, self.num_of_Ne_axes])
         self.num_of_lines_to_read_with_const_Te = int(np.ceil(self.num_of_Ne_axes / 8))
         self.start_line = int(np.ceil(self.sum_of_axes / 8)) + 3
         self.stop_line = self.start_line + self.num_of_lines_to_read_with_const_Te * self.num_of_Te_axes
         self.move = self.stop_line - self.start_line + 1
-        self.FA_arr = []
-        self.xnew, self.ynew = np.logspace(10, 15, num=100), np.logspace(1, 4, num=1000)
 
-        if not connurent:
-            self.FA_arr = [self.get_Fractional_Abundance(i, ACD_file, SCD_file) for i in range(self.Z + 1)]
+        self.FA_arr = []
+        self.xnew, self.ynew = np.logspace(10, 15, num=100), np.logspace(np.log10(5), np.log10(20000), num=800)
+
+        self.ACD_matrix, self.SCD_matrix = self.read_coefficients_matrices(self.ACD_file,type='ACD'), self.read_coefficients_matrices(self.SCD_file, type='SCD')
+
+        if not concurrent:
+            self.FA_arr = [self.get_Fractional_Abundance(i) for i in range(self.Z + 1)]
+
+    def select_files(self):
+        filenames = os.listdir(os.path.join('data','unresolved'))
+        r_acd = re.compile("acd.*\_{}\.dat".format(self.atom.lower()))
+        r_scd = re.compile("scd.*\_{}\.dat".format(self.atom.lower()))
+        ACD_file = list(set(list(filter(r_acd.match, filenames))))[0]
+        SCD_file = list(set(list(filter(r_scd.match, filenames))))[0]
+        return os.path.join('data','unresolved',ACD_file), os.path.join('data','unresolved',SCD_file)
 
     def read_first_line_of_file(self, filepath):
         with open(filepath) as file:
@@ -80,27 +97,22 @@ class FractionalAbundance:
                                                            self.empty_matrix.copy()) for i in range(self.Z)}
         return CD
 
-    def get_Fractional_Abundance(self, ion, ACD_file, SCD_file):
-
-        ACD, SCD = self.read_coefficients_matrices(ACD_file, type='ACD'), self.read_coefficients_matrices(SCD_file, type='SCD')
-
-        K = [np.divide(10 ** SCD[str(i) + str(i + 1)], 10 ** ACD[str(i + 1) + str(i)]) for i in range(self.Z)]
+    def get_Fractional_Abundance(self, ion):
+        K = [np.divide(10 ** self.SCD_matrix[str(i) + str(i + 1)], 10 ** self.ACD_matrix[str(i + 1) + str(i)]) for i in range(self.Z)]
         K.insert(0, np.ones_like(K[0]))
-
         product_all = np.cumprod(K, axis=0)
         FA = np.divide(product_all[ion], np.sum(product_all, axis=0))
-
         return FA
 
     def plot_FA_all(self, i_Ne=50):
-        for i in range(self.Z + 1):
+        for i in range(self.Z):
             x = self.ynew
-            y = self.FA_arr[i][:, i_Ne]
+            y = self.FA_arr[i+1][:, i_Ne]
             plt.plot(x, y, label="$" + self.atom + "^{" + str(i) + "+}$")
             plt.xscale("log")
             plt.yscale("log")
             plt.ylim((10 ** -3, 10 ** 0))
-            plt.xlim((10 ** 1, 10 ** 4))
+            plt.xlim((5, 20000))
             plt.grid()
             plt.title("Fractional Abundance of " + self.atom + " in $N_{e}$  = " + "{:.2e}".format(self.xnew[i_Ne]) + " $cm^{-3}$", fontsize=16)
             plt.xlabel("$T_{e}$ [eV]", fontsize=16)
@@ -108,22 +120,35 @@ class FractionalAbundance:
 
         plt.show()
 
-    def worker(self, ion, ACD_file, SCD_file):
-        fun = self.get_Fractional_Abundance(ion, ACD_file, SCD_file)
+    def worker(self, ion):
+        fun = self.get_Fractional_Abundance(ion)
         return fun
 
-    def calculate(self, ACD_file, SCD_file):
+    def calculate(self):
         ion_list = list(range(self.Z + 1))
-        pool = ProcessPoolExecutor(self.Z + 1)
-        pp = [pool.submit(self.worker, ion, ACD_file, SCD_file) for ion in range(len(ion_list))]
+        pool = ThreadPoolExecutor(self.Z + 1)
+        pp = [pool.submit(self.worker, ion) for ion in range(len(ion_list))]
         for p in pp:
             self.FA_arr.append(p.result())
 
+    def create_dataset(self,output_filepath='.'):
+        columns = ['T']
+        for Z in range(self.Z):
+            columns.append('Z{}'.format(Z+1))
+        FA_output_df = pd.DataFrame(columns=columns)
+        for i in range(self.Z):
+            FA_output_df[columns[i+1]] = self.FA_arr[i+1][:,40]*100
+        FA_output_df['T'] = self.ynew
+        FA_output_df.to_csv(os.path.join(output_filepath,'fractional_abundance_{}.dat'.format(self.atom)),sep=" ",index=False)
 
-t1 = time.time()
+
+#t1 = time.time()
 if __name__ == '__main__':
-    FA = FractionalAbundance(atom='Xe',SCD_file=os.path.join('data','unresolved','scd89_xe.dat'),ACD_file=os.path.join('data','unresolved','acd89_xe.dat'),connurent=True)
-    FA.calculate(ACD_file=os.path.join('data','unresolved','acd89_xe.dat'), SCD_file=os.path.join('data','unresolved','scd89_xe.dat'))
+    FA = FractionalAbundance(atom='Xe',concurrent=True)
+    t11 = time.time()
+    FA.calculate()
     t2 = time.time()
-    print(f"Execution time: {t2 - t1} s")
-    FA.plot_FA_all(i_Ne=40)
+    #print(f"Execution time: {t11 - t1} s")
+    #print(f"Calculation time: {t2 - t11} s")
+    #FA.create_dataset()
+    #FA.plot_FA_all(i_Ne=40)

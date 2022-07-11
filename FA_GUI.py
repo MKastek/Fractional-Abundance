@@ -40,15 +40,15 @@ class FA_GUI(tk.Tk):
         self.plot_button.pack(side=LEFT)
         self.save_button.pack(side=LEFT)
 
-        self.slider_frame = ttk.Frame(self.top_frame, padding="10 10 10 10")
-        self.slider_frame.pack(side=RIGHT)
+        self.slider_frame_Te = ttk.Frame(self.top_frame, padding="10 10 10 10")
+        self.slider_frame_Te.pack(side=RIGHT)
 
-        self.Te_label = Label(self.slider_frame, text="Te [eV]")
+        self.Te_label = Label(self.slider_frame_Te, text="Te [eV]")
         self.Te_label.pack(side=TOP)
 
         self.Te_scale = DoubleVar()
         self.Te_scale.set(4.0)
-        self.slider_Te = Scale(self.slider_frame, orient='horizontal', from_=1.1, to=4.0, resolution=0.1, variable=self.Te_scale,command=lambda x: self.replot())
+        self.slider_Te = Scale(self.slider_frame_Te, orient='horizontal', from_=1.1, to=4.0, resolution=0.1, variable=self.Te_scale,command=lambda x: self.replot())
         self.slider_Te.pack(side=TOP)
 
         self.fig = Figure(figsize=(5, 4), dpi=100)

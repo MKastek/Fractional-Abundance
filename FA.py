@@ -12,6 +12,6 @@ def init_parser():
 
 if __name__ == '__main__':
     args = init_parser()
-    FA = FractionalAbundance(atom=args.atom,SCD_file=args.SCD, ACD_file=args.ACD)
-    FA.calculate(SCD_file=args.SCD, ACD_file=args.ACD)
+    FA = FractionalAbundance(atom=args.atom)
+    FA.calculate()
     FA.plot_FA_all(i_Ne=40)
