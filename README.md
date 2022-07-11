@@ -60,6 +60,7 @@ The above formulas can be written in abbreviated notation:
 $$\Large FA(Li^{ i+})=\frac{\prod_{j=0}^{i} K_{j}}{\sum_{k=0}^{Z} \prod_{j=0}^{k} K_{j} } $$
 
 
+
 ### Implementation  
 
 
