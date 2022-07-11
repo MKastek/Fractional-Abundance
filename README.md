@@ -47,17 +47,17 @@ Each of the coefficients $k_{SCD}$, $k_{ACD}$ and thus $K$ depends on the temper
 
 ### Fractional Abundance  
 
-$FA(Li^{0})=\frac{n_{0}}{n_{0}+n_{1}+n_{2}+n_{3}}=\frac{K_{0}}{K_{0}+K_{0}\cdot K_{1}+K_{0}\cdot K_{1}\cdot K_{2}+K_{0} \cdot K_{1}\cdot K_{2} \cdot K_{3}}$  
+$$\large FA(Li^{0})=\frac{n_{0}}{n_{0}+n_{1}+n_{2}+n_{3}}=\frac{K_{0}}{K_{0}+K_{0}\cdot K_{1}+K_{0}\cdot K_{1}\cdot K_{2}+K_{0} \cdot K_{1}\cdot K_{2} \cdot K_{3}}$$  
 
-$FA(Li^{1+})=\frac{n_{0}}{n_{0}+n_{1}+n_{2}+n_{3}}=\frac{K_{0}\cdot K_{1}}{K_{0}+K_{0}\cdot K_{1}+K_{0}\cdot K_{1}\cdot K_{2}+K_{0} \cdot K_{1}\cdot K_{2} \cdot K_{3}}$  
+$$\large FA(Li^{1+})=\frac{n_{0}}{n_{0}+n_{1}+n_{2}+n_{3}}=\frac{K_{0}\cdot K_{1}}{K_{0}+K_{0}\cdot K_{1}+K_{0}\cdot K_{1}\cdot K_{2}+K_{0} \cdot K_{1}\cdot K_{2} \cdot K_{3}}$$  
 
-$FA(Li^{2+})=\frac{n_{0}}{n_{0}+n_{1}+n_{2}+n_{3}}=\frac{K_{0}\cdot K_{1} \cdot K_{2}}{K_{0}+K_{0}\cdot K_{1}+K_{0}\cdot K_{1}\cdot K_{2}+K_{0} \cdot K_{1}\cdot K_{2} \cdot K_{3}}$  
+$$\large FA(Li^{2+})=\frac{n_{0}}{n_{0}+n_{1}+n_{2}+n_{3}}=\frac{K_{0}\cdot K_{1} \cdot K_{2}}{K_{0}+K_{0}\cdot K_{1}+K_{0}\cdot K_{1}\cdot K_{2}+K_{0} \cdot K_{1}\cdot K_{2} \cdot K_{3}}$$  
 
-$FA(Li^{3+})=\frac{n_{0}}{n_{0}+n_{1}+n_{2}+n_{3}}=\frac{K_{0}\cdot K_{1} \cdot K_{2} \cdot K_{3}}{K_{0}+K_{0}\cdot K_{1}+K_{0}\cdot K_{1}\cdot K_{2}+K_{0} \cdot K_{1}\cdot K_{2} \cdot K_{3}}$  
+$$\large FA(Li^{3+})=\frac{n_{0}}{n_{0}+n_{1}+n_{2}+n_{3}}=\frac{K_{0}\cdot K_{1} \cdot K_{2} \cdot K_{3}}{K_{0}+K_{0}\cdot K_{1}+K_{0}\cdot K_{1}\cdot K_{2}+K_{0} \cdot K_{1}\cdot K_{2} \cdot K_{3}}$$  
 
 The above formulas can be written in abbreviated notation:
 
-$$\Large 	FA(Li^{ i+})=\dfrac{\prod_{j=0}^{i} K_{j}}{\sum_{k=0}^{Z} \prod_{j=0}^{k} K_{j} } $$
+$$\Large FA(Li^{ i+})=\dfrac{\prod_{j=0}^{i} K_{j}}{\sum_{k=0}^{Z} \prod_{j=0}^{k} K_{j} } $$
 
 
 ### Implementation  
