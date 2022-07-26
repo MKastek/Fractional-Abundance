@@ -1,3 +1,5 @@
+from itertools import accumulate
+
 import numpy as np
 import os
 import matplotlib.pyplot as plt
@@ -6,13 +8,15 @@ from scipy import interpolate
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 import time
 import re
+from numba.typed import Dict
+import numba
 
 plt.rcParams['figure.figsize'] = [12, 7]
 
 
 class FractionalAbundance:
 
-    def __init__(self, atom, concurrent = False):
+    def __init__(self, atom, concurrent = False, numba=False):
 
         self.atom = atom
         self.ACD_file, self.SCD_file= self.select_files()
@@ -31,8 +35,22 @@ class FractionalAbundance:
 
         self.ACD_matrix, self.SCD_matrix = self.read_coefficients_matrices(self.ACD_file,type='ACD'), self.read_coefficients_matrices(self.SCD_file, type='SCD')
 
+        if numba:
+            self.SCD_matrix_dict = Dict()
+            self.ACD_matrix_dict = Dict()
+            for k, v in self.SCD_matrix.items():
+                self.SCD_matrix_dict[k] = v
+            for k, v in self.ACD_matrix.items():
+                self.ACD_matrix_dict[k] = v
+
         if not concurrent:
-            self.FA_arr = [self.get_Fractional_Abundance(i) for i in range(self.Z + 1)]
+            self.FA_arr = []
+
+            for ion in range(self.Z + 1):
+                if numba:
+                    self.FA_arr.append(self.get_Fractional_Abundance_numba(SCD_matrix=self.SCD_matrix_dict,ACD_matrix=self.ACD_matrix_dict,ion=ion,Z=self.Z))
+                else:
+                    self.FA_arr.append(self.get_Fractional_Abundance(ion=ion))
 
     def select_files(self):
         filenames = os.listdir(os.path.join('data','unresolved'))
@@ -97,10 +115,32 @@ class FractionalAbundance:
                                                            self.empty_matrix.copy()) for i in range(self.Z)}
         return CD
 
+    @staticmethod
+    @numba.njit(cache=True)
+    def get_Fractional_Abundance_numba(SCD_matrix,ACD_matrix, ion,Z):
+        K = [np.divide(10 ** SCD_matrix[str(i) + str(i + 1)], 10 ** ACD_matrix[str(i + 1) + str(i)]) for i in range(Z)]
+
+        K.insert(0, np.ones_like(K[0]))
+
+        product_all = [K[0]]
+        cur = K[0]
+        sum_all = np.zeros_like(K[0])
+        for i in range(1,len(K)):
+            cur = np.multiply(K[i],cur)
+            sum_all += cur
+            product_all.append(cur)
+
+        #product_all = np.cumprod(K,axis=0)
+        #FA = np.divide(product_all[ion], np.sum(product_all,axis=0))
+        FA = np.divide(product_all[ion], sum_all)
+        return FA
+
     def get_Fractional_Abundance(self, ion):
-        K = [np.divide(10 ** self.SCD_matrix[str(i) + str(i + 1)], 10 ** self.ACD_matrix[str(i + 1) + str(i)]) for i in range(self.Z)]
+        K = [np.divide(10 ** self.SCD_matrix[str(i) + str(i + 1)], 10 ** self.ACD_matrix[str(i + 1) + str(i)]) for i in
+             range(self.Z)]
         K.insert(0, np.ones_like(K[0]))
         product_all = np.cumprod(K, axis=0)
+
         FA = np.divide(product_all[ion], np.sum(product_all, axis=0))
         return FA
 
@@ -120,18 +160,18 @@ class FractionalAbundance:
 
         plt.show()
 
-    def worker(self, ion):
-        fun = self.get_Fractional_Abundance(ion)
+    def worker(self,ion):
+        fun = self.get_Fractional_Abundance(ion=ion)
         return fun
 
     def calculate(self):
         ion_list = list(range(self.Z + 1))
         pool = ThreadPoolExecutor(self.Z + 1)
-        pp = [pool.submit(self.worker, ion) for ion in range(len(ion_list))]
+        pp = [pool.submit(self.worker,ion=ion) for ion in range(len(ion_list))]
         for p in pp:
             self.FA_arr.append(p.result())
 
-    def create_dataset(self,output_filepath='.'):
+    def create_dataset(self,output_filepath='.',filename='fractional_abundance.dat'):
         columns = ['T']
         for Z in range(self.Z):
             columns.append('Z{}'.format(Z+1))
@@ -139,16 +179,17 @@ class FractionalAbundance:
         for i in range(self.Z):
             FA_output_df[columns[i+1]] = self.FA_arr[i+1][:,40]*100
         FA_output_df['T'] = self.ynew
-        FA_output_df.to_csv(os.path.join(output_filepath,'fractional_abundance_{}.dat'.format(self.atom)),sep=" ",index=False)
+        FA_output_df.to_csv(os.path.join(output_filepath,filename),sep=" ",index=False)
 
 
 #t1 = time.time()
 if __name__ == '__main__':
-    FA = FractionalAbundance(atom='Xe',concurrent=True)
-    t11 = time.time()
-    FA.calculate()
-    t2 = time.time()
-    #print(f"Execution time: {t11 - t1} s")
-    #print(f"Calculation time: {t2 - t11} s")
-    #FA.create_dataset()
-    #FA.plot_FA_all(i_Ne=40)
+    print('Numba')
+    FA = FractionalAbundance(atom='Mo', numba=True)
+    FA.create_dataset(filename='numba')
+    FA.plot_FA_all()
+    print('No Numba')
+    FA = FractionalAbundance(atom='Mo', numba=False)
+    FA.create_dataset(filename='nonumba')
+    FA.plot_FA_all()
+

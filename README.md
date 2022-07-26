@@ -76,5 +76,6 @@ in OPEN-ADAS files.
 Calculation are performed with use of NumPy in multithreaded approach, FA for every ion is calculated in another thread with use of ThreadPoolExecutor.
 
 ### GUI - tkinter
-Simple GUI application allows to study FA for different atoms.    
+Simple GUI application allows to study FA for different atoms.   
+
 ![](images/plot.PNG)
