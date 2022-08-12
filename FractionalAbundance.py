@@ -10,6 +10,7 @@ import time
 import re
 from numba.typed import Dict
 import numba
+from numba import prange
 
 plt.rcParams['figure.figsize'] = [12, 7]
 
@@ -116,7 +117,7 @@ class FractionalAbundance:
         return CD
 
     @staticmethod
-    @numba.njit(cache=True)
+    @numba.njit(parallel=True)
     def get_Fractional_Abundance_numba(SCD_matrix,ACD_matrix, ion,Z):
         K = [np.divide(10 ** SCD_matrix[str(i) + str(i + 1)], 10 ** ACD_matrix[str(i + 1) + str(i)]) for i in range(Z)]
 
