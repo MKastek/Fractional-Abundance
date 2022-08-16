@@ -85,7 +85,7 @@ class FA_GUI(tk.Tk):
     def plot(self, scale_Te=4.0):
         self.status_label.config(font=("Segoe UI",12, "bold"))
         self.status_variable.set("Status: Calculating...")
-        self.FA = FractionalAbundance.FractionalAbundance(atom=self.atom, SCD_file=self.SCD_file, ACD_file=self.ACD_file)
+        self.FA = FractionalAbundance.FractionalAbundance(atom=self.atom)
         self.fig.clf()
         self.plot_data(scale_Te=scale_Te)
         for i in range(self.FA.Z + 1):
