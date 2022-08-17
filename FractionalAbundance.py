@@ -113,7 +113,7 @@ class FractionalAbundance:
 
     @staticmethod
     @numba.njit(parallel=True)
-    def get_Fractional_Abundance(SCD_matrix,ACD_matrix, ion,Z):
+    def get_Fractional_Abundance(SCD_matrix, ACD_matrix, ion, Z):
         K = [np.divide(10 ** SCD_matrix[str(i) + str(i + 1)], 10 ** ACD_matrix[str(i + 1) + str(i)]) for i in range(Z)]
 
         K.insert(0, np.ones_like(K[0]))
