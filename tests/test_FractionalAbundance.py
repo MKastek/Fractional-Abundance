@@ -18,9 +18,9 @@ class TestFA(unittest.TestCase):
     def tearDownClass(cls):
         cls.time_df['element'] = cls.atom_lst
         cls.time_df = cls.time_df.set_index('element')
-        cls.time_df.to_csv(os.path.join('tests', 'time.csv'))
+        cls.time_df.to_csv(os.path.join('tests', 'time-no-numba.csv'))
         cls.time_df.plot.bar(rot=0, title='Computation time [s]').grid()
-        plt.show()
+        plt.savefig(os.path.join('tests','test.png'))
 
     def test_concurrent(self):
         calc_time_con = []

@@ -12,8 +12,6 @@ import numba
 from numba.core import types
 from numba.typed import Dict
 
-# Make array type.  Type-expression is not supported in jit
-# functions.
 float_array = types.float64[:,:]
 from numba import prange
 
