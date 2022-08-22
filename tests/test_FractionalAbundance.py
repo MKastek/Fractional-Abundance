@@ -37,9 +37,9 @@ class TestFA(unittest.TestCase):
                 calc_time_con.append(t2 - t1)
                 calc_time_np.append(t3 - t2)
 
-
         self.time_df['multi-threading-numba'] = calc_time_con
         self.time_df['numba'] = calc_time_np
+
 
 if __name__ == '__main__':
     unittest.main()
