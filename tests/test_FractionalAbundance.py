@@ -2,14 +2,14 @@ import unittest
 import pandas as pd
 import os
 import time
-from FractionalAbundance import FractionalAbundance
+from Fractional_Abundace.FractionalAbundance import FractionalAbundance
 import matplotlib.pyplot as plt
 unittest.TestLoader.sortTestMethodsUsing = None
 
 
 class TestFA(unittest.TestCase):
 
-    atom_lst = ['He', 'Ne', 'Ar', 'Kr', 'Xe']
+    atom_lst = ['Xe', 'Ne', 'Ar', 'Kr', 'Xe']
 
     @classmethod
     def setUpClass(cls):
@@ -29,12 +29,13 @@ class TestFA(unittest.TestCase):
         for i in range(len(TestFA.atom_lst)):
             with self.subTest(i=i):
                 t1 = time.time()
-                FA_con = FractionalAbundance(atom=TestFA.atom_lst[i], concurrent=True)
+                FA_con = FractionalAbundance(atom=TestFA.atom_lst[i], concurrent=True, path_to_data=r"C:\Users\marci\Desktop\Projekt NCN\Zadania\1.Styczeń\Fractional_Abundance\data\unresolved")
                 t2 = time.time()
-                FA = FractionalAbundance(atom=TestFA.atom_lst[i], concurrent=False)
+                FA = FractionalAbundance(atom=TestFA.atom_lst[i], concurrent=False, path_to_data=r"C:\Users\marci\Desktop\Projekt NCN\Zadania\1.Styczeń\Fractional_Abundance\data\unresolved")
                 t3 = time.time()
                 # self.assertGreater(t3-t2, t2-t1, f"concurrent is not faster at {TestFA.atom_lst[i]}")
                 calc_time_con.append(t2 - t1)
+                print(t2 -t1)
                 calc_time_np.append(t3 - t2)
 
         self.time_df['multi-threading-numba'] = calc_time_con

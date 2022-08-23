@@ -1,5 +1,5 @@
 import argparse
-from FractionalAbundance import FractionalAbundance
+from Fractional_Abundace.FractionalAbundance import FractionalAbundance
 
 
 def init_parser():

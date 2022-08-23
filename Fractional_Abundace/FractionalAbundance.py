@@ -1,11 +1,9 @@
-from itertools import accumulate
-
 import numpy as np
 import os
 import matplotlib.pyplot as plt
 import pandas as pd
 from scipy import interpolate
-from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor
 import time
 import re
 import numba
@@ -13,16 +11,17 @@ from numba.core import types
 from numba.typed import Dict
 
 float_array = types.float64[:,:]
-from numba import prange
+
 
 plt.rcParams['figure.figsize'] = [12, 7]
 
 
 class FractionalAbundance:
 
-    def __init__(self, atom, concurrent = False):
+    def __init__(self, atom, path_to_data = r"C:\Users\marci\Desktop\Projekt NCN\Zadania\1.Styczeń\Fractional_Abundance\data\unresolved", concurrent = False):
 
         self.atom = atom
+        self.path_to_data = path_to_data
         self.ACD_file, self.SCD_file= self.select_files()
 
         self.Z, self.num_of_Ne_axes, self.num_of_Te_axes, self.num_of_lines_to_read_with_axes, self.sum_of_axes = self.read_first_line_of_file(self.SCD_file)
@@ -46,12 +45,12 @@ class FractionalAbundance:
             self.calculate()
 
     def select_files(self):
-        filenames = os.listdir(os.path.join('data','unresolved'))
+        filenames = os.listdir(os.path.join(self.path_to_data))
         r_acd = re.compile("acd.*\_{}\.dat".format(self.atom.lower()))
         r_scd = re.compile("scd.*\_{}\.dat".format(self.atom.lower()))
         ACD_file = list(set(list(filter(r_acd.match, filenames))))[0]
         SCD_file = list(set(list(filter(r_scd.match, filenames))))[0]
-        return os.path.join('data','unresolved',ACD_file), os.path.join('data','unresolved',SCD_file)
+        return os.path.join(self.path_to_data,ACD_file), os.path.join(self.path_to_data,SCD_file)
 
     def read_first_line_of_file(self, filepath):
         with open(filepath) as file:
@@ -176,6 +175,14 @@ class FractionalAbundance:
 
 
 if __name__ == '__main__':
-    FA = FractionalAbundance(atom='Ar',concurrent=True)
-    FA.plot_FA_all()
+    t1 = time.time()
+    FA = FractionalAbundance(atom='Xe',concurrent=True, path_to_data=r"C:\Users\marci\Desktop\Projekt NCN\Zadania\1.Styczeń\Fractional_Abundance\data\unresolved")
+    t2 = time.time()
+    print(t2-t1)
+    t1 = time.time()
+    FA = FractionalAbundance(atom='Xe', concurrent=True,
+                             path_to_data=r"C:\Users\marci\Desktop\Projekt NCN\Zadania\1.Styczeń\Fractional_Abundance\data\unresolved")
+    t2 = time.time()
+    print(t2 - t1)
+
 

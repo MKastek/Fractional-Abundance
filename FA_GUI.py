@@ -7,12 +7,10 @@ from tkinter import filedialog as fd
 # Create the main window that holds all the widgets
 from matplotlib.figure import Figure
 import pandas as pd
-from tkinter.messagebox import showerror
 import tkinter as tk
-import FractionalAbundance
+from Fractional_Abundace import FractionalAbundance
 import os
 import threading
-import time
 
 
 class FA_GUI(tk.Tk):
