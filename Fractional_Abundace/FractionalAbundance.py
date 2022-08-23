@@ -175,13 +175,13 @@ class FractionalAbundance:
 
 
 if __name__ == '__main__':
+    path_to_data = r"C:\Users\marci\Desktop\Projekt NCN\Zadania\1.Styczeń\Fractional_Abundance\data\unresolved"
     t1 = time.time()
-    FA = FractionalAbundance(atom='Xe',concurrent=True, path_to_data=r"C:\Users\marci\Desktop\Projekt NCN\Zadania\1.Styczeń\Fractional_Abundance\data\unresolved")
+    FA = FractionalAbundance(atom='Xe',concurrent=True, path_to_data = path_to_data)
     t2 = time.time()
     print(t2-t1)
     t1 = time.time()
-    FA = FractionalAbundance(atom='Xe', concurrent=True,
-                             path_to_data=r"C:\Users\marci\Desktop\Projekt NCN\Zadania\1.Styczeń\Fractional_Abundance\data\unresolved")
+    FA = FractionalAbundance(atom='Xe', concurrent=True, path_to_data = path_to_data)
     t2 = time.time()
     print(t2 - t1)
 
