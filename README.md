@@ -13,21 +13,21 @@ recombination are as follows:
 ### Collision ionization
 Associated with collisional ionization is the $k_{SCD}$ $\frac{cm^{3}}{s}$ (Effective Ionization Coefficient):  
 
-$Li^{0} + e^{-} \rightarrow Li^{1+} + 2e^{-} \quad (k^{01}_{SCD})$  
+$$Li^{0} + e^{-} \rightarrow Li^{1+} + 2e^{-} \quad (k^{01}_{SCD})$$  
 
-$Li^{1+} + e^{-} \rightarrow Li^{2+} + 2e^{-}  \quad (k^{12}_{SCD})$
+$$Li^{1+} + e^{-} \rightarrow Li^{2+} + 2e^{-}  \quad (k^{12}_{SCD})$$
 
-$Li^{2+} + e^{-} \rightarrow Li^{3+} + 2e^{-}  \quad  (k^{23}_{SCD})$
+$$Li^{2+} + e^{-} \rightarrow Li^{3+} + 2e^{-}  \quad  (k^{23}_{SCD})$$
 
 
 ### Collision recombination  
 Associated with collisional recombination is the $k_{ACD}$ $\frac{cm^{3}}{s}$ (Effective Recombination Coefficient):  
 
-$Li^{1+} + e^{-} \rightarrow Li^{0} + h\nu \quad (k^{10}_{ACD})$  
+$$Li^{1+} + e^{-} \rightarrow Li^{0} + h\nu \quad (k^{10}_{ACD})$$
 
-$Li^{2+} + e^{-} \rightarrow Li^{1+} + h\nu  \quad (k^{21}_{ACD})$  
+$$Li^{2+} + e^{-} \rightarrow Li^{1+} + h\nu  \quad (k^{21}_{ACD})$$  
 
-$Li^{3+} + e^{-} \rightarrow Li^{2+} + h\nu  \quad  (k^{32}_{ACD})$
+$$Li^{3+} + e^{-} \rightarrow Li^{2+} + h\nu  \quad  (k^{32}_{ACD})$$
 
 
 ### Rate equations
@@ -35,13 +35,13 @@ $Li^{3+} + e^{-} \rightarrow Li^{2+} + h\nu  \quad  (k^{32}_{ACD})$
 A set of kinetic equations describing the change in the value of a given ion over time is represented by the following equations, which for coronal equilibrium should be equal to 0.  
 
 
-$\large  \frac{dn_{0}}{dt} = k_{ACD}^{10} n_1 n_e - k_{SCD}^{01} n_{0} n_{e} = 0 $
+$$\large  \frac{dn_{0}}{dt} = k_{ACD}^{10} n_1 n_e - k_{SCD}^{01} n_{0} n_{e} = 0 $$
 
-$\large  \frac{dn_{1}}{dt} = k_{SCD}^{01} n_{0}n_{e} - k_{SCD}^{12} n_{1}n_{e} + k_{ACD}^{21}n_{2}n_{e} - k_{ACD}^{10}n_{1}n_{e} = 0 $ 
+$$\large  \frac{dn_{1}}{dt} = k_{SCD}^{01} n_{0}n_{e} - k_{SCD}^{12} n_{1}n_{e} + k_{ACD}^{21}n_{2}n_{e} - k_{ACD}^{10}n_{1}n_{e} = 0 $$ 
 
-$\large  \frac{dn_{2}}{dt} = k_{SCD}^{12} n_{1}n_{e} - k_{SCD}^{23} n_{2}n_{e} + k_{ACD}^{32}n_{3}n_{e} - k_{ACD}^{21}n_{2}n_{e} = 0 $
+$$\large  \frac{dn_{2}}{dt} = k_{SCD}^{12} n_{1}n_{e} - k_{SCD}^{23} n_{2}n_{e} + k_{ACD}^{32}n_{3}n_{e} - k_{ACD}^{21}n_{2}n_{e} = 0 $$
 
-$\large \frac{dn_{3}}{dt} = k_{SCD}^{23} n_{2}n_{e} - k_{ACD}^{32} n_{3}n_{e} = 0$
+$$\large \frac{dn_{3}}{dt} = k_{SCD}^{23} n_{2}n_{e} - k_{ACD}^{32} n_{3}n_{e} = 0$$
 
 Assuming $K_{0}=1$
 
