@@ -20,6 +20,15 @@ class FractionalAbundance:
 
     def __init__(self, atom, path_to_data = r"C:\Users\marci\Desktop\Projekt NCN\Zadania\1.Styczeń\Fractional_Abundance\data\unresolved", concurrent = False):
 
+        """
+        Calculates FA for given element.
+        :param atom: name of element, e.g. `He`.
+        :param path_to_data: file path to folder with OPEN-ADAS data.
+        :param concurrent: `bool`,
+                If set calculations are performed with ThreadPoolExecutor,
+                if False calculations are with loops.
+        """
+
         self.atom = atom
         self.path_to_data = path_to_data
         self.ACD_file, self.SCD_file= self.select_files()
@@ -45,6 +54,10 @@ class FractionalAbundance:
             self.calculate()
 
     def select_files(self):
+        """
+        Selects files for specified atom.
+        :return: Return filepaths for ACD file and SCD file.
+        """
         filenames = os.listdir(os.path.join(self.path_to_data))
         r_acd = re.compile("acd.*\_{}\.dat".format(self.atom.lower()))
         r_scd = re.compile("scd.*\_{}\.dat".format(self.atom.lower()))
@@ -53,6 +66,11 @@ class FractionalAbundance:
         return os.path.join(self.path_to_data,ACD_file), os.path.join(self.path_to_data,SCD_file)
 
     def read_first_line_of_file(self, filepath):
+        """
+        Retrieve information from fist line of file.
+        :param filepath: filepath to SCD or ACD file.
+        :return: Z, number of Ne values, number of Te values
+        """
         with open(filepath) as file:
             first_line = file.readline().strip().split()
             Z, num_of_Ne_axes, num_of_Te_axes = int(first_line[0]), int(first_line[1]), int(first_line[2])
@@ -95,7 +113,7 @@ class FractionalAbundance:
 
     def read_coefficients_matrices(self, filepath, type):
 
-        CD =  Dict.empty(
+        CD = Dict.empty(
         key_type=types.unicode_type,
         value_type=float_array)
 
@@ -136,17 +154,21 @@ class FractionalAbundance:
         FA = np.divide(product_all[ion], sum_all)
         return FA
 
-    def plot_FA_all(self, i_Ne=50):
+    def plot_FA_all(self, index_Ne=50):
+        """
+        Plot all FA graphs for given atom.
+        :param i_Ne: index of Ne list
+        """
         for i in range(self.Z):
             x = self.ynew
-            y = self.FA_arr[i+1][:, i_Ne]
+            y = self.FA_arr[i+1][:, index_Ne]
             plt.plot(x, y, label="$" + self.atom + "^{" + str(i) + "+}$")
             plt.xscale("log")
             plt.yscale("log")
             plt.ylim((10 ** -3, 10 ** 0))
             plt.xlim((5, 20000))
             plt.grid()
-            plt.title("Fractional Abundance of " + self.atom + " in $N_{e}$  = " + "{:.2e}".format(self.xnew[i_Ne]) + " $cm^{-3}$", fontsize=16)
+            plt.title("Fractional Abundance of " + self.atom + " in $N_{e}$  = " + "{:.2e}".format(self.xnew[index_Ne]) + " $cm^{-3}$", fontsize=16)
             plt.xlabel("$T_{e}$ [eV]", fontsize=16)
             plt.ylabel("FA", fontsize=16)
 
