@@ -62,7 +62,7 @@ class FA_GUI(tk.Tk):
 
     def open_ACD_file(self):
         self.ACD_file = fd.askopenfilename(initialdir='.')
-        self.atom = os.path.basename(self.ACD_file)[-6:-4]
+        self.element = os.path.basename(self.ACD_file)[-6:-4]
 
     def open_SCD_file(self):
         self.SCD_file = fd.askopenfilename(initialdir='.')
@@ -83,13 +83,13 @@ class FA_GUI(tk.Tk):
     def plot(self, scale_Te=4.0):
         self.status_label.config(font=("Segoe UI",12, "bold"))
         self.status_variable.set("Status: Calculating...")
-        self.FA = FractionalAbundance.FractionalAbundance(atom=self.atom)
+        self.FA = FractionalAbundance.FractionalAbundance(element=self.element)
         self.fig.clf()
         self.plot_data(scale_Te=scale_Te)
         for i in range(self.FA.Z + 1):
             x = self.FA.ynew
             y = self.FA.FA_arr[i][:, 50]
-            self.subplot.plot(x, y, label="$" + self.FA.atom + "^{" + str(i) + "+}$")
+            self.subplot.plot(x, y, label="$" + self.FA.element + "^{" + str(i) + "+}$")
         self.fig.canvas.draw_idle()
         self.status_label.config(font=("Segoe UI", 10))
         self.status_variable.set("Status: Load the data")
@@ -113,7 +113,7 @@ class FA_GUI(tk.Tk):
                 #print(num)
                 #print(event.xdata,event.ydata)
                 self.annot.xy = (event.xdata, event.ydata)
-                self.annot.set_text(self.atom.capitalize()+" "+str(num)+"+")
+                self.annot.set_text(self.element.capitalize()+" "+str(num)+"+")
                 self.annot.set_visible(True)
                 self.fig.canvas.draw_idle()
             else:

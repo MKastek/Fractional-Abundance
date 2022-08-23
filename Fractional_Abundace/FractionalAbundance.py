@@ -18,18 +18,18 @@ plt.rcParams['figure.figsize'] = [12, 7]
 
 class FractionalAbundance:
 
-    def __init__(self, atom, path_to_data = r"C:\Users\marci\Desktop\Projekt NCN\Zadania\1.Styczeń\Fractional_Abundance\data\unresolved", concurrent = False):
+    def __init__(self, element, path_to_data = r"C:\Users\marci\Desktop\Projekt NCN\Zadania\1.Styczeń\Fractional_Abundance\data\unresolved", concurrent = False):
 
         """
         Calculates FA for given element.
-        :param atom: name of element, e.g. `He`.
+        :param element: name of element, e.g. `He`.
         :param path_to_data: file path to folder with OPEN-ADAS data.
         :param concurrent: `bool`,
                 If set calculations are performed with ThreadPoolExecutor,
                 if False calculations are with loops.
         """
 
-        self.atom = atom
+        self.element = element
         self.path_to_data = path_to_data
         self.ACD_file, self.SCD_file= self.select_files()
 
@@ -55,12 +55,12 @@ class FractionalAbundance:
 
     def select_files(self):
         """
-        Selects files for specified atom.
+        Selects files for specified element.
         :return: Return filepaths for ACD file and SCD file.
         """
         filenames = os.listdir(os.path.join(self.path_to_data))
-        r_acd = re.compile("acd.*\_{}\.dat".format(self.atom.lower()))
-        r_scd = re.compile("scd.*\_{}\.dat".format(self.atom.lower()))
+        r_acd = re.compile("acd.*\_{}\.dat".format(self.element.lower()))
+        r_scd = re.compile("scd.*\_{}\.dat".format(self.element.lower()))
         ACD_file = list(set(list(filter(r_acd.match, filenames))))[0]
         SCD_file = list(set(list(filter(r_scd.match, filenames))))[0]
         return os.path.join(self.path_to_data,ACD_file), os.path.join(self.path_to_data,SCD_file)
@@ -79,6 +79,11 @@ class FractionalAbundance:
         return Z, num_of_Ne_axes, num_of_Te_axes, num_of_lines_to_read_with_axes, sum_of_axes
 
     def read_axes(self, filepath):
+        """
+        Retrieve list of Ne and Te values.
+        :param filepath:
+        :return: list of Te values, list of Ne values
+        """
         Z, num_of_Ne_axes, num_of_Te_axes, num_of_lines_to_read_with_axes, sum_of_axes = self.read_first_line_of_file(filepath)
 
         with open(filepath) as file:
@@ -156,19 +161,19 @@ class FractionalAbundance:
 
     def plot_FA_all(self, index_Ne=50):
         """
-        Plot all FA graphs for given atom.
+        Plot all FA graphs for given element.
         :param i_Ne: index of Ne list
         """
         for i in range(self.Z):
             x = self.ynew
             y = self.FA_arr[i+1][:, index_Ne]
-            plt.plot(x, y, label="$" + self.atom + "^{" + str(i) + "+}$")
+            plt.plot(x, y, label="$" + self.element + "^{" + str(i) + "+}$")
             plt.xscale("log")
             plt.yscale("log")
             plt.ylim((10 ** -3, 10 ** 0))
             plt.xlim((5, 20000))
             plt.grid()
-            plt.title("Fractional Abundance of " + self.atom + " in $N_{e}$  = " + "{:.2e}".format(self.xnew[index_Ne]) + " $cm^{-3}$", fontsize=16)
+            plt.title("Fractional Abundance of " + self.element + " in $N_{e}$  = " + "{:.2e}".format(self.xnew[index_Ne]) + " $cm^{-3}$", fontsize=16)
             plt.xlabel("$T_{e}$ [eV]", fontsize=16)
             plt.ylabel("FA", fontsize=16)
 
@@ -199,12 +204,12 @@ class FractionalAbundance:
 if __name__ == '__main__':
     path_to_data = r"C:\Users\marci\Desktop\Projekt NCN\Zadania\1.Styczeń\Fractional_Abundance\data\unresolved"
     t1 = time.time()
-    FA = FractionalAbundance(atom='Xe',concurrent=True, path_to_data = path_to_data)
+    FA = FractionalAbundance(element='Xe',concurrent=True, path_to_data = path_to_data)
     t2 = time.time()
-    print(t2-t1)
+    print('Execution time with compilation: ', np.round(t2 - t1, 3))
     t1 = time.time()
-    FA = FractionalAbundance(atom='Xe', concurrent=True, path_to_data = path_to_data)
+    FA = FractionalAbundance(element='Xe', concurrent=True, path_to_data = path_to_data)
     t2 = time.time()
-    print(t2 - t1)
+    print('Execution time: ', np.round(t2 - t1, 3))
 
 
