@@ -9,7 +9,7 @@ import re
 import numba
 from numba.core import types
 from numba.typed import Dict
-
+from pathlib import Path
 float_array = types.float64[:,:]
 
 
@@ -55,15 +55,13 @@ class FractionalAbundance:
 
     def select_files(self):
         """
-        Selects files for specified element.
+        Selects filepaths for specified element.
         :return: Return filepaths for ACD file and SCD file.
         """
-        filenames = os.listdir(os.path.join(self.path_to_data))
-        r_acd = re.compile("acd.*\_{}\.dat".format(self.element.lower()))
-        r_scd = re.compile("scd.*\_{}\.dat".format(self.element.lower()))
-        ACD_file = list(set(list(filter(r_acd.match, filenames))))[0]
-        SCD_file = list(set(list(filter(r_scd.match, filenames))))[0]
-        return os.path.join(self.path_to_data,ACD_file), os.path.join(self.path_to_data,SCD_file)
+        path_to_data = Path(self.path_to_data)
+        ACD_file_path = list(path_to_data.glob("acd??_{}*.dat".format(self.element.lower())))[0]
+        SCD_file_path = list(path_to_data.glob("scd??_{}*.dat".format(self.element.lower())))[0]
+        return ACD_file_path, SCD_file_path
 
     def read_first_line_of_file(self, filepath):
         """
@@ -211,5 +209,6 @@ if __name__ == '__main__':
     FA = FractionalAbundance(element='Xe', concurrent=True, path_to_data = path_to_data)
     t2 = time.time()
     print('Execution time: ', np.round(t2 - t1, 3))
+    FA.plot_FA_all()
 
 
