@@ -13,12 +13,12 @@ from pathlib import Path
 float_array = types.float64[:,:]
 
 
-plt.rcParams['figure.figsize'] = [12, 7]
+plt.rcParams["figure.figsize"] = [10.5, 0.65 * 10.5]
 
 
 class FractionalAbundance:
 
-    def __init__(self, element, path_to_data = r"C:\Users\marci\Desktop\Projekt NCN\Zadania\1.Styczeń\Fractional_Abundance\data\unresolved", concurrent = False):
+    def __init__(self, element, concurrent = False, path_to_data = r"C:\Users\marci\Desktop\Projekt NCN\Zadania\1.Styczeń\Fractional_Abundance\data\unresolved"):
 
         """
         Calculates FA for given element.
@@ -137,17 +137,24 @@ class FractionalAbundance:
     @staticmethod
     @numba.njit(parallel=True)
     def calculate_cum_sum_prod(SCD_matrix, ACD_matrix, Z):
+        """
+
+        :param SCD_matrix:
+        :param ACD_matrix:
+        :param Z: atomic number
+        :return: product_all, sum_all
+        """
         K = [np.divide(10 ** SCD_matrix[str(i) + str(i + 1)], 10 ** ACD_matrix[str(i + 1) + str(i)]) for i in range(Z)]
 
         K.insert(0, np.ones_like(K[0]))
 
         product_all = [K[0]]
-        cur = K[0]
+        current_product = K[0]
         sum_all = np.zeros_like(K[0])
         for i in range(1, len(K)):
-            cur = np.multiply(K[i], cur)
-            sum_all += cur
-            product_all.append(cur)
+            current_product = np.multiply(K[i], current_product)
+            sum_all += current_product
+            product_all.append(current_product)
 
         return product_all, sum_all
 
@@ -201,13 +208,13 @@ class FractionalAbundance:
 
 if __name__ == '__main__':
     path_to_data = r"C:\Users\marci\Desktop\Projekt NCN\Zadania\1.Styczeń\Fractional_Abundance\data\unresolved"
-    t1 = time.time()
+    t1 = time.perf_counter()
     FA = FractionalAbundance(element='Xe',concurrent=True, path_to_data = path_to_data)
-    t2 = time.time()
+    t2 = time.perf_counter()
     print('Execution time with compilation: ', np.round(t2 - t1, 3))
-    t1 = time.time()
+    t1 = time.perf_counter()
     FA = FractionalAbundance(element='Xe', concurrent=True, path_to_data = path_to_data)
-    t2 = time.time()
+    t2 = time.perf_counter()
     print('Execution time: ', np.round(t2 - t1, 3))
     FA.plot_FA_all()
 
