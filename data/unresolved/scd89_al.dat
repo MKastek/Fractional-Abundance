@@ -1583,11 +1583,11 @@
  -10.80231 -10.80231 -10.80231 -10.80231 -10.80231 -10.80231 -10.80231 -10.80231
 C-------------------------------------------------------------------------------
 C
-C  Generate ionisation from : 
+C  Generate ionisation from :
 C     /home/adas/adas/adf03/atompars/atompars_mm#al.dat
 C
 C  CODE     : ADAS408
-C  PRODUCER : Martin O'Mullane              
+C  PRODUCER : Martin O'Mullane
 C  DATE     : 27.06.06
 C
 C-------------------------------------------------------------------------------

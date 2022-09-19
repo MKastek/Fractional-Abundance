@@ -2638,15 +2638,15 @@
 
 C------------------------------------------------------------------------------
 C
-C Arnaud and Raymond (Astrophys. J, 398, p394, 1992) data scaled in 
-C density by H P Summers's 74 data (Culham Laboratory internal memo IM 367) - 
-C see central ADAS adf11/acd74/acd74_fe.dat. 
+C Arnaud and Raymond (Astrophys. J, 398, p394, 1992) data scaled in
+C density by H P Summers's 74 data (Culham Laboratory internal memo IM 367) -
+C see central ADAS adf11/acd74/acd74_fe.dat.
 C
 C Date     :  08/03/00
 C Producer :  Martin O'Mullane
 C
-C------------------------------------------------------------------------------ 
- 
+C------------------------------------------------------------------------------
+
 C---------------------------------------------------------------------------------
 C ADAS ADF11 DATA - SCCS info: @(#)$Header: /home/adascvs/adas/adf11/scd92/scd92_fe.dat,v 2.1 2004/07/07 00:12:20 whitefor Exp $ Date $Date: 2004/07/07 00:12:20 $
 C---------------------------------------------------------------------------------

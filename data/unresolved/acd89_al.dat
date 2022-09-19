@@ -1583,11 +1583,11 @@
  -13.63218 -13.63218 -13.63218 -13.63218 -13.63218 -13.63218 -13.63218 -13.63218
 C-------------------------------------------------------------------------------
 C
-C  Generate radiative recombination from : 
+C  Generate radiative recombination from :
 C     /home/adas/adas/adf03/atompars/atompars_mm#al.dat
 C
 C  CODE     : ADAS408
-C  PRODUCER : Martin O'Mullane              
+C  PRODUCER : Martin O'Mullane
 C  DATE     : 27.06.06
 C
 C-------------------------------------------------------------------------------

@@ -5092,11 +5092,11 @@
  -11.98817 -11.98817 -11.98817 -11.98817 -11.98817 -11.98817 -11.98817 -11.98817
 C-------------------------------------------------------------------------------
 C
-C  Generate radiative recombination from : 
+C  Generate radiative recombination from :
 C     ./atompars_mm#mo.dat
 C
 C  CODE     : ADAS408
-C  PRODUCER : Martin O'Mullane              
+C  PRODUCER : Martin O'Mullane
 C  DATE     : 23.01.05
 C
 C-------------------------------------------------------------------------------

@@ -5092,11 +5092,11 @@
  -12.47930 -12.47930 -12.47930 -12.47930 -12.47930 -12.47930 -12.47930 -12.47930
 C-------------------------------------------------------------------------------
 C
-C  Generate ionisation from : 
+C  Generate ionisation from :
 C     ./atompars_mm#mo.dat
 C
 C  CODE     : ADAS408
-C  PRODUCER : Martin O'Mullane              
+C  PRODUCER : Martin O'Mullane
 C  DATE     : 23.01.05
 C
 C-------------------------------------------------------------------------------
