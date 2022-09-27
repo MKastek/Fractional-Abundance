@@ -17,7 +17,7 @@ float_array = types.float64[:, :]
 plt.rcParams["figure.figsize"] = [10.5, 0.65 * 10.5]
 
 
-class FractionalAbundance:
+class FractionalAbundanceNP:
     def __init__(
         self,
         element,
@@ -56,30 +56,13 @@ class FractionalAbundance:
         )
         self.move = self.stop_line - self.start_line + 1
 
-        self.FA_arr = []
         self.Ne_new, self.Te_new = np.logspace(10, 15, num=100), np.logspace(
             np.log10(5), np.log10(20000), num=800
         )
 
-        self.ACD_matrix, self.SCD_matrix = self.read_coefficients_matrices(
-            self.ACD_file, type="ACD"
-        ), self.read_coefficients_matrices(self.SCD_file, type="SCD")
-        self.product_all, self.sum_all = self.calculate_cum_sum_prod(
-            self.SCD_matrix, self.ACD_matrix, self.Z
-        )
-        self.K = self.calculate_K()
-
-        if not concurrent:
-            self.FA_arr = [
-                self.get_Fractional_Abundance(
-                    ion=ion,
-                    product_all=np.array(self.product_all),
-                    sum_all=np.array(self.sum_all),
-                )
-                for ion in range(self.Z + 1)
-            ]
-        else:
-            self.calculate()
+        self.ACD_matrix = self.read_coefficients_matrices(self.ACD_file, type="ACD")
+        self.SCD_matrix = self.read_coefficients_matrices(self.SCD_file, type="SCD")
+        self.FA_arr = self.get_Fractional_Abundance()
 
     def select_files(self):
         """
@@ -238,7 +221,7 @@ class FractionalAbundance:
                 )
         return CD
 
-    def calculate_K(self):
+    def get_Fractional_Abundance(self, ion=None):
         K = [
             np.divide(
                 10 ** self.SCD_matrix[str(i) + str(i + 1)],
@@ -247,60 +230,12 @@ class FractionalAbundance:
             for i in range(self.Z)
         ]
         K.insert(0, np.ones_like(K[0]))
-        return np.array(K)
-
-    @staticmethod
-    @numba.njit(parallel=True)
-    def calculate_cum_sum_prod(SCD_matrix, ACD_matrix, Z):
-        """
-
-        Parameters
-        ----------
-        SCD_matrix
-        ACD_matrix
-        Z
-
-        Returns
-        -------
-
-        """
-        K = [
-            np.divide(
-                10 ** SCD_matrix[str(i) + str(i + 1)],
-                10 ** ACD_matrix[str(i + 1) + str(i)],
-            )
-            for i in range(Z)
-        ]
-
-        K.insert(0, np.ones_like(K[0]))
-
-        product_all = [K[0]]
-        current_product = K[0]
-        sum_all = np.zeros_like(K[0])
-        for i in range(1, len(K)):
-            current_product = np.multiply(K[i], current_product)
-            sum_all += current_product
-            product_all.append(current_product)
-
-        return product_all, sum_all
-
-    @staticmethod
-    @numba.njit(parallel=True)
-    def get_Fractional_Abundance(ion, product_all, sum_all):
-        """
-
-        Parameters
-        ----------
-        ion
-        product_all
-        sum_all
-
-        Returns
-        -------
-
-        """
-        FA = np.divide(product_all[ion], sum_all)
-        return FA
+        K_cumprod = np.cumprod(K, axis=0)
+        K_cumprod_sum = np.sum(K_cumprod, axis=0)
+        if ion is None:
+            return np.divide(K_cumprod, K_cumprod_sum)
+        else:
+            return np.divide(K_cumprod, K_cumprod_sum)[ion]
 
     def plot_FA_all(self, index_Ne=50):
         """
@@ -335,7 +270,7 @@ class FractionalAbundance:
 
         plt.show()
 
-    def worker(self, ion, product_all, sum_all):
+    def worker(self, ion):
         """
 
         Parameters
@@ -348,9 +283,7 @@ class FractionalAbundance:
         -------
 
         """
-        fun = self.get_Fractional_Abundance(
-            ion=ion, product_all=np.array(product_all), sum_all=np.array(sum_all)
-        )
+        fun = self.get_Fractional_Abundance(ion=ion)
         return fun
 
     def calculate(self):
@@ -362,12 +295,7 @@ class FractionalAbundance:
         """
         ion_list = list(range(self.Z + 1))
         pool = ThreadPoolExecutor(self.Z + 1)
-        pp = [
-            pool.submit(
-                self.worker, ion=ion, product_all=self.product_all, sum_all=self.sum_all
-            )
-            for ion in range(len(ion_list))
-        ]
+        pp = [pool.submit(self.worker, ion=ion) for ion in range(len(ion_list))]
         for p in pp:
             self.FA_arr.append(p.result())
 
@@ -386,34 +314,5 @@ class FractionalAbundance:
 
 if __name__ == "__main__":
     path_to_data = r"C:\Users\marci\Desktop\Projekt NCN\Zadania\1.Styczeń\Fractional_Abundance\data\unresolved"
-    FA = FractionalAbundance(element="He", concurrent=True, path_to_data=path_to_data)
-    plt.plot(FA.Te_new, FA.FA_arr[0][:, 50])
-    plt.plot(FA.Te_new, FA.FA_arr[1][:, 50])
-    plt.plot(FA.Te_new, FA.FA_arr[2][:, 50])
-    plt.xscale("log")
-    plt.yscale("log")
-    plt.ylim((10**-3, 10**0))
-    plt.xlim((5, 20000))
-    plt.show()
-    K = FA.K
-    FA_output = np.zeros_like(K)
-    for i in range(K.shape[1]):
-        for j in range(K.shape[2]):
-            sum_all = 0
-            current_product = 1
-            product_all = []
-            for k in range(K.shape[0]):
-                current_product *= K[k, i, j]
-                sum_all += current_product
-                product_all.append(current_product)
-            for k in range(K.shape[0]):
-                FA_output[k, i, j] = product_all[k] / sum_all
-    plt.plot(FA.Te_new, FA_output[0, :, 50])
-    plt.plot(FA.Te_new, FA_output[1, :, 50])
-    plt.plot(FA.Te_new, FA_output[2, :, 50])
-    plt.xscale("log")
-    plt.yscale("log")
-    plt.ylim((10**-3, 10**0))
-    plt.xlim((5, 20000))
-    plt.show()
-    print(np.allclose(FA.FA_arr[0][:, 50], FA_output[0, :, 50]))
+    FA = FractionalAbundanceNP(element="He", concurrent=True, path_to_data=path_to_data)
+    FA.plot_FA_all()

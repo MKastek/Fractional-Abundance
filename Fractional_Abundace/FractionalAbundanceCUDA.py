@@ -3,21 +3,19 @@ import os
 import matplotlib.pyplot as plt
 import pandas as pd
 from scipy import interpolate
-from concurrent.futures import ThreadPoolExecutor
-import time
-import re
-import numba
+
 from numba.core import types
 from numba.typed import Dict
 from pathlib import Path
+from numba import cuda
 
 float_array = types.float64[:, :]
-
+import math
 
 plt.rcParams["figure.figsize"] = [10.5, 0.65 * 10.5]
 
 
-class FractionalAbundance:
+class FractionalAbundanceCUDA:
     def __init__(
         self,
         element,
@@ -61,25 +59,11 @@ class FractionalAbundance:
             np.log10(5), np.log10(20000), num=800
         )
 
-        self.ACD_matrix, self.SCD_matrix = self.read_coefficients_matrices(
-            self.ACD_file, type="ACD"
-        ), self.read_coefficients_matrices(self.SCD_file, type="SCD")
-        self.product_all, self.sum_all = self.calculate_cum_sum_prod(
-            self.SCD_matrix, self.ACD_matrix, self.Z
-        )
-        self.K = self.calculate_K()
+        self.ACD_matrix = self.read_coefficients_matrices(self.ACD_file, type="ACD")
+        self.SCD_matrix = self.read_coefficients_matrices(self.SCD_file, type="SCD")
 
-        if not concurrent:
-            self.FA_arr = [
-                self.get_Fractional_Abundance(
-                    ion=ion,
-                    product_all=np.array(self.product_all),
-                    sum_all=np.array(self.sum_all),
-                )
-                for ion in range(self.Z + 1)
-            ]
-        else:
-            self.calculate()
+        self.K = self.calculate_K()
+        self.FA_arr = self.get_Fractional_Abundance()
 
     def select_files(self):
         """
@@ -250,57 +234,38 @@ class FractionalAbundance:
         return np.array(K)
 
     @staticmethod
-    @numba.njit(parallel=True)
-    def calculate_cum_sum_prod(SCD_matrix, ACD_matrix, Z):
-        """
+    @cuda.jit("void(float64[:,:,:], float64[:,:,:])")
+    def calculate_FA_gpu(X, Y):
+        k, j, i = cuda.grid(3)
+        if i < X.shape[2] and j < X.shape[1] and k < X.shape[0]:
+            sum_all = 0
+            current_product = 1
+            for k in range(X.shape[0]):
+                current_product *= X[k, j, i]
+                sum_all += current_product
+                Y[k, j, i] = current_product
+                if k == X.shape[0] - 1:
+                    for k in range(X.shape[0]):
+                        Y[k, j, i] = Y[k, j, i] / sum_all
+                        cuda.syncthreads()
 
-        Parameters
-        ----------
-        SCD_matrix
-        ACD_matrix
-        Z
-
-        Returns
-        -------
-
-        """
-        K = [
-            np.divide(
-                10 ** SCD_matrix[str(i) + str(i + 1)],
-                10 ** ACD_matrix[str(i + 1) + str(i)],
-            )
-            for i in range(Z)
-        ]
-
-        K.insert(0, np.ones_like(K[0]))
-
-        product_all = [K[0]]
-        current_product = K[0]
-        sum_all = np.zeros_like(K[0])
-        for i in range(1, len(K)):
-            current_product = np.multiply(K[i], current_product)
-            sum_all += current_product
-            product_all.append(current_product)
-
-        return product_all, sum_all
-
-    @staticmethod
-    @numba.njit(parallel=True)
-    def get_Fractional_Abundance(ion, product_all, sum_all):
-        """
-
-        Parameters
-        ----------
-        ion
-        product_all
-        sum_all
-
-        Returns
-        -------
-
-        """
-        FA = np.divide(product_all[ion], sum_all)
-        return FA
+    def get_Fractional_Abundance(self, ion=None):
+        threadsperblock = (self.Z + 1, 5, 2)
+        blockspergrid_x = math.ceil(self.K.shape[0] / threadsperblock[0])
+        blockspergrid_y = math.ceil(self.K.shape[1] / threadsperblock[1])
+        blockspergrid_z = math.ceil(self.K.shape[2] / threadsperblock[2])
+        blockspergrid = (blockspergrid_x, blockspergrid_y, blockspergrid_z)
+        # device array
+        device_array = cuda.to_device((self.K).astype(np.float64))
+        # result array
+        result_array = cuda.device_array_like(np.ones_like(self.K).astype(np.float64))
+        # calculate
+        self.calculate_FA_gpu[blockspergrid, threadsperblock](
+            device_array, result_array
+        )
+        # copy result
+        result_gpu = result_array.copy_to_host()
+        return result_gpu
 
     def plot_FA_all(self, index_Ne=50):
         """
@@ -335,42 +300,6 @@ class FractionalAbundance:
 
         plt.show()
 
-    def worker(self, ion, product_all, sum_all):
-        """
-
-        Parameters
-        ----------
-        ion
-        product_all
-        sum_all
-
-        Returns
-        -------
-
-        """
-        fun = self.get_Fractional_Abundance(
-            ion=ion, product_all=np.array(product_all), sum_all=np.array(sum_all)
-        )
-        return fun
-
-    def calculate(self):
-        """
-
-        Returns
-        -------
-
-        """
-        ion_list = list(range(self.Z + 1))
-        pool = ThreadPoolExecutor(self.Z + 1)
-        pp = [
-            pool.submit(
-                self.worker, ion=ion, product_all=self.product_all, sum_all=self.sum_all
-            )
-            for ion in range(len(ion_list))
-        ]
-        for p in pp:
-            self.FA_arr.append(p.result())
-
     def create_dataset(self, output_filepath=".", filename="fractional_abundance.dat"):
         columns = ["T"]
         for Z in range(self.Z):
@@ -386,34 +315,7 @@ class FractionalAbundance:
 
 if __name__ == "__main__":
     path_to_data = r"C:\Users\marci\Desktop\Projekt NCN\Zadania\1.Styczeń\Fractional_Abundance\data\unresolved"
-    FA = FractionalAbundance(element="He", concurrent=True, path_to_data=path_to_data)
-    plt.plot(FA.Te_new, FA.FA_arr[0][:, 50])
-    plt.plot(FA.Te_new, FA.FA_arr[1][:, 50])
-    plt.plot(FA.Te_new, FA.FA_arr[2][:, 50])
-    plt.xscale("log")
-    plt.yscale("log")
-    plt.ylim((10**-3, 10**0))
-    plt.xlim((5, 20000))
-    plt.show()
-    K = FA.K
-    FA_output = np.zeros_like(K)
-    for i in range(K.shape[1]):
-        for j in range(K.shape[2]):
-            sum_all = 0
-            current_product = 1
-            product_all = []
-            for k in range(K.shape[0]):
-                current_product *= K[k, i, j]
-                sum_all += current_product
-                product_all.append(current_product)
-            for k in range(K.shape[0]):
-                FA_output[k, i, j] = product_all[k] / sum_all
-    plt.plot(FA.Te_new, FA_output[0, :, 50])
-    plt.plot(FA.Te_new, FA_output[1, :, 50])
-    plt.plot(FA.Te_new, FA_output[2, :, 50])
-    plt.xscale("log")
-    plt.yscale("log")
-    plt.ylim((10**-3, 10**0))
-    plt.xlim((5, 20000))
-    plt.show()
-    print(np.allclose(FA.FA_arr[0][:, 50], FA_output[0, :, 50]))
+    FA = FractionalAbundanceCUDA(
+        element="Xe", concurrent=True, path_to_data=path_to_data
+    )
+    FA.plot_FA_all()
