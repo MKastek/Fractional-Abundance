@@ -45,11 +45,11 @@ $$\large \frac{dn_{3}}{dt} = k_{SCD}^{23} n_{2}n_{e} - k_{ACD}^{32} n_{3}n_{e} =
 
 Assuming $K_{0}=1$
 
-$$k^{01}{SCD} n_{0} = k_{ACD}^{10} n_{1}, \quad K_{1} = \frac{k_{SCD}^{01}}{k_{ACD}^{10}}=\frac{n_{1}}{n_{0}}, \quad K_{0}\cdot K_{1}=\frac{n_{1}}{n_{0}}$$
+$$k_{SCD}^{01} n_{0} = k_{ACD}^{10} n_{1}, \quad K_{1} = \frac{k_{SCD}^{01}}{k_{ACD}^{10}}=\frac{n_{1}}{n_{0}}, \quad K_{0}\cdot K_{1}=\frac{n_{1}}{n_{0}}$$
 
-$$k^{12}{SCD} n_{1} = k_{ACD}^{21} n_{2}, \quad K_{2} = \frac{k_{SCD}^{12}}{k_{ACD}^{21}}=\frac{n_{2}}{n_{1}}, \quad K_{1}\cdot K_{2}=\frac{n_{2}}{n_{0}}$$
+$$k_{SCD}^{12} n_{1} = k_{ACD}^{21} n_{2}, \quad K_{2} = \frac{k_{SCD}^{12}}{k_{ACD}^{21}}=\frac{n_{2}}{n_{1}}, \quad K_{1}\cdot K_{2}=\frac{n_{2}}{n_{0}}$$
 
-$$k^{23}{SCD} n_{2} = k_{ACD}^{32} n_{3}, \quad K_{3} = \frac{k_{SCD}^{23}}{k_{ACD}^{32}}=\frac{n_{3}}{n_{2}}, \quad K_{1}\cdot K_{2}\cdot K_{3}=\frac{n_{3}}{n_{0}}$$
+$$k_{SCD}^{23} n_{2} = k_{ACD}^{32} n_{3}, \quad K_{3} = \frac{k_{SCD}^{23}}{k_{ACD}^{32}}=\frac{n_{3}}{n_{2}}, \quad K_{1}\cdot K_{2}\cdot K_{3}=\frac{n_{3}}{n_{0}}$$
 
 Each of the coefficients $k_{SCD}$, $k_{ACD}$ and thus $K$ depends on the temperature $T_{e}$ and density $N_{e}$.
 
