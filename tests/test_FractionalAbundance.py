@@ -2,6 +2,8 @@ import unittest
 import pandas as pd
 import time
 from Fractional_Abundace.FractionalAbundance import FractionalAbundance
+from Fractional_Abundace.FractionalAbundanceNP import FractionalAbundanceNP
+from Fractional_Abundace.FractionalAbundanceCUDA import FractionalAbundanceCUDA
 import matplotlib.pyplot as plt
 from plasmapy.particles import atomic_number
 from pathlib import Path
@@ -70,8 +72,10 @@ class TestFA(unittest.TestCase):
         cls.plot_result(cls.time_df)
 
     def test_concurrent(self):
-        calc_time_con = []
-        calc_time_np = []
+        calc_time_numba_threading = []
+        calc_time_numba = []
+        calc_time_numpy = []
+        calc_time_cuda = []
         charge_number = []
         FA_con = FractionalAbundance(
             element="He", concurrent=True, path_to_data=self.path_to_data
@@ -80,7 +84,7 @@ class TestFA(unittest.TestCase):
             with self.subTest(i=i):
                 trials = 10
 
-                t1 = (
+                time_numba_threading = (
                     timeit(
                         stmt="FractionalAbundance(element, True)",
                         globals={
@@ -92,7 +96,7 @@ class TestFA(unittest.TestCase):
                     / trials
                 )
 
-                t2 = (
+                time_numba = (
                     timeit(
                         stmt="FractionalAbundance(element, False)",
                         globals={
@@ -104,13 +108,41 @@ class TestFA(unittest.TestCase):
                     / trials
                 )
 
-                calc_time_con.append(t1)
-                calc_time_np.append(t2)
+                time_numpy = (
+                    timeit(
+                        stmt="FractionalAbundanceNP(element)",
+                        globals={
+                            "FractionalAbundanceNP": FractionalAbundanceNP,
+                            "element": element,
+                        },
+                        number=trials,
+                    )
+                    / trials
+                )
+
+                time_cuda = (
+                    timeit(
+                        stmt="FractionalAbundanceCUDA(element)",
+                        globals={
+                            "FractionalAbundanceCUDA": FractionalAbundanceNP,
+                            "element": element,
+                        },
+                        number=trials,
+                    )
+                    / trials
+                )
+
+                calc_time_numba_threading.append(time_numba_threading)
+                calc_time_numba.append(time_numba)
+                calc_time_numpy.append(time_numpy)
+                calc_time_cuda.append(time_cuda)
                 charge_number.append(atomic_number(element))
                 print(element)
 
-        self.time_df["multi-threading-numba"] = calc_time_con
-        self.time_df["numba"] = calc_time_np
+        self.time_df["multi-threading-numba"] = calc_time_numba_threading
+        self.time_df["numba"] = calc_time_numba
+        self.time_df["numpy"] = calc_time_numpy
+        self.time_df["cuda"] = calc_time_cuda
         self.time_df["charge-number"] = charge_number
 
 
