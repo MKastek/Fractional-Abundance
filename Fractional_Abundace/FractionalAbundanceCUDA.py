@@ -20,7 +20,7 @@ class FractionalAbundanceCUDA(BaseFractionalAbundance):
     def __init__(
         self,
         element,
-        path_to_data=r"C:\Users\marci\Desktop\Projekt NCN\Zadania\1.Styczeń\Fractional_Abundance\data\unresolved",
+        path_to_data=Path(__file__).parents[1] / "data" / "unresolved",
     ):
 
         """
@@ -80,11 +80,3 @@ class FractionalAbundanceCUDA(BaseFractionalAbundance):
         # copy result
         result_gpu = result_array.copy_to_host()
         return result_gpu
-
-
-if __name__ == "__main__":
-    start = time.perf_counter()
-    FA = FractionalAbundanceCUDA(element="Xe")
-    end = time.perf_counter()
-    time = end - start
-    print(f"Time: {time: .2f} s")

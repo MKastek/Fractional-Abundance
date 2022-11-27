@@ -22,7 +22,7 @@ class FractionalAbundanceNP(BaseFractionalAbundance):
     def __init__(
         self,
         element,
-        path_to_data=r"C:\Users\marci\Desktop\Projekt NCN\Zadania\1.Styczeń\Fractional_Abundance\data\unresolved",
+        path_to_data=Path(__file__).parents[1] / "data" / "unresolved",
     ):
         """
 
@@ -51,12 +51,3 @@ class FractionalAbundanceNP(BaseFractionalAbundance):
             return np.divide(K_cumprod, K_cumprod_sum)
         else:
             return np.divide(K_cumprod, K_cumprod_sum)[ion]
-
-
-if __name__ == "__main__":
-    start = time.perf_counter()
-    FA = FractionalAbundanceNP(element="He")
-    end = time.perf_counter()
-    time = end - start
-    print(f"Time: {time: .2f} s")
-    FA.plot_FA_all()

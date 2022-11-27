@@ -23,7 +23,7 @@ class FractionalAbundance(BaseFractionalAbundance):
         self,
         element,
         concurrent=False,
-        path_to_data=r"C:\Users\marci\Desktop\Projekt NCN\Zadania\1.Styczeń\Fractional_Abundance\data\unresolved",
+        path_to_data=Path(__file__).parents[1] / "data" / "unresolved",
     ):
 
         """
@@ -139,19 +139,3 @@ class FractionalAbundance(BaseFractionalAbundance):
         ]
         for p in pp:
             self.FA_arr.append(p.result())
-
-
-if __name__ == "__main__":
-    path_to_data = r"C:\Users\marci\Desktop\Projekt NCN\Zadania\1.Styczeń\Fractional_Abundance\data\unresolved"
-    start = time.perf_counter()
-    FA = FractionalAbundance(element="Xe", concurrent=True, path_to_data=path_to_data)
-    end = time.perf_counter()
-    calc_time = end - start
-    print(f"Time: {calc_time: .2f} s")
-
-    start = time.perf_counter()
-    FA = FractionalAbundance(element="Xe", concurrent=True, path_to_data=path_to_data)
-    end = time.perf_counter()
-    calc_time = end - start
-    print(f"Time: {calc_time: .2f} s")
-    FA.plot_FA_all()
