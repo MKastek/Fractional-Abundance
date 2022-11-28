@@ -3,14 +3,11 @@ import os
 import matplotlib.pyplot as plt
 import pandas as pd
 from scipy import interpolate
-import time
 from numba.core import types
 from numba.typed import Dict
 from pathlib import Path
 
 float_array = types.float64[:, :]
-
-
 plt.rcParams["figure.figsize"] = [10.5, 0.65 * 10.5]
 
 
@@ -250,7 +247,6 @@ class BaseFractionalAbundance:
 
         plt.grid(which="minor", alpha=0.3)
         plt.grid(which="major", alpha=0.7)
-        plt.show()
 
     def create_dataset(self, output_filepath=".", filename="fractional_abundance.dat"):
         columns = ["T"]
@@ -263,8 +259,3 @@ class BaseFractionalAbundance:
         FA_output_df.to_csv(
             os.path.join(output_filepath, filename), sep=" ", index=False
         )
-
-
-if __name__ == "__main__":
-    path_to_data = r"C:\Users\marci\Desktop\Projekt NCN\Zadania\1.Styczeń\Fractional_Abundance\data\unresolved"
-    print(Path(__file__).parents[1] / "data" / "unresolved")

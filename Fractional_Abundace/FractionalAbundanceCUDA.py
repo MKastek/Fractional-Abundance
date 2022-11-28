@@ -1,18 +1,12 @@
 import numpy as np
-import os
 import matplotlib.pyplot as plt
-import pandas as pd
-from scipy import interpolate
-import time
 from numba.core import types
-from numba.typed import Dict
 from pathlib import Path
 from numba import cuda
-from BaseFractionalAbundance import BaseFractionalAbundance
+import math
+from Fractional_Abundace.BaseFractionalAbundance import BaseFractionalAbundance
 
 float_array = types.float64[:, :]
-import math
-
 plt.rcParams["figure.figsize"] = [10.5, 0.65 * 10.5]
 
 

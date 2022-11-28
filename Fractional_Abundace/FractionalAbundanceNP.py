@@ -1,19 +1,7 @@
 import numpy as np
-import os
 import matplotlib.pyplot as plt
-import pandas as pd
-from scipy import interpolate
-from concurrent.futures import ThreadPoolExecutor
-from BaseFractionalAbundance import BaseFractionalAbundance
-import time
-import re
-import numba
-from numba.core import types
-from numba.typed import Dict
 from pathlib import Path
-
-float_array = types.float64[:, :]
-
+from Fractional_Abundace.BaseFractionalAbundance import BaseFractionalAbundance
 
 plt.rcParams["figure.figsize"] = [10.5, 0.65 * 10.5]
 
