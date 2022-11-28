@@ -75,7 +75,11 @@ in OPEN-ADAS files.
 
 Calculation are performed with use of Numba in multithreaded approach, FA for every ion is calculated in another thread with use of ThreadPoolExecutor.
 ### Example  
-
+```python
+FA = FractionalAbundance(element='Ar')
+FA.plot_FA_all()
+```
+![](images/FA_Ar_plot.png)
 ### Performane test (NumPy, Numba JIT, Numba GPU)  
 
 ### GUI - tkinter
