@@ -81,7 +81,7 @@ FA.plot_FA_all()
 ```
 ![](images/FA_Ar_plot.png)
 ### Performane test (NumPy, Numba JIT, Numba GPU)  
-
+![](tests/plots/test_bar_plot.png)
 ### GUI - tkinter
 Simple GUI application allows to study FA for different atoms.
 
